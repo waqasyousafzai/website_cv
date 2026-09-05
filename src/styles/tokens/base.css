@@ -1,0 +1,10 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-app);color:var(--text-body);font:var(--type-body);-webkit-font-smoothing:antialiased}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid var(--lime-a32);transition:var(--t-hover)}
+a:hover{color:var(--text-link-hover);border-bottom-color:var(--lime-500)}
+::selection{background:var(--lime-a32);color:var(--ink-0)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--void-0)}
+::-webkit-scrollbar-thumb{background:var(--void-4)}
+::-webkit-scrollbar-thumb:hover{background:var(--void-5)}

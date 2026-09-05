@@ -9,11 +9,11 @@ Use the following stack for this project:
 | Frontend | React 19 | Installed |
 | Build tool | Vite | Configured |
 | Language | TypeScript | Configured |
-| Routing | TanStack Router, file-based | Configured; router-only single-page app |
-| Data fetching | TanStack Query v5+ | Intended; not yet installed |
-| Styling | Tailwind CSS | Version 4 configured through the Vite plugin |
-| UI components | shadcn/ui | Intended; not yet configured |
-| Icons | Lucide Icons (`lucide-react`) | Intended; not yet installed |
+| Routing | TanStack Router, file-based | Configured; router-only single-page app (`/`, `/pipeline`, `/replay`) |
+| Data fetching | TanStack Query v5+ | Not installed — every value in the app is local |
+| Styling | Tailwind CSS | Version 4 through the Vite plugin, bridged to the design tokens in `src/styles.css` |
+| UI components | shadcn/ui | Configured (`components.json`); Radix primitives in `src/components/ui` |
+| Icons | Lucide Icons (`lucide-react`) | Installed; wrapped by `src/components/design/Icon.tsx` |
 | Formatting and linting | Biome | Configured in `biome.json` |
 | Hosting | Cloudflare | Preferred target; deployment not yet configured |
 | Package manager | npm | Use the existing `package-lock.json` |
@@ -26,6 +26,8 @@ These statuses describe the initial scaffold. Check the repository before assumi
 - Define routes in `src/routes`. Do not manually edit `src/routeTree.gen.ts`; regenerate it with the routing tools.
 - Use TanStack Query for remote data fetching, caching, and mutations when needed. Add the dependency and provider when implementing those features.
 - Use Tailwind CSS for styling, shadcn/ui for reusable UI components, and Lucide for icons. Install and configure missing pieces as features require them.
+- The visual language comes from the Claude Design project *Waqas Yousafzai CV Design System*. Its tokens and component classes are vendored verbatim into `src/styles/` and are excluded from Biome so they can be re-synced cleanly; `src/components/design/` holds the TypeScript ports of its components. Change a token there, not at the call site.
+- shadcn/ui covers the primitives that map onto Radix (button, dialog, tabs, switch, tooltip). Each generated file is restyled onto the design system's `ds-*` classes rather than shadcn's default palette — keep that pattern when adding more.
 - Follow `biome.json` for formatting, linting, and import organization. Do not introduce ESLint or Prettier without a project requirement.
 - Use npm for dependency changes and keep `package-lock.json` in sync.
 - Target Cloudflare for hosting. Select and document the specific Cloudflare service when deployment is implemented, including support for direct navigation to client-side routes.

@@ -1,0 +1,57 @@
+:root{
+  /* ── base: void ─────────────────────────────── */
+  --void-0:#1a2130; --void-1:#212a3b; --void-2:#273143; --void-3:#2f3b50; --void-4:#3c4a63; --void-5:#4d5d78;
+  --void-well:#141a26;
+  /* ── base: signal ───────────────────────────── */
+  --lime-100:#e9ffdd; --lime-300:#b4ff8e; --lime-500:#7cff3d; --lime-700:#4fa827; --lime-900:#20460f;
+  --amber-300:#ffd689; --amber-500:#ffb020; --amber-700:#a86c05;
+  --cyan-300:#8ae8ff; --cyan-500:#35d6ff; --cyan-700:#0f7fa0;
+  --magenta-300:#ff96b8; --magenta-500:#ff3d7f; --magenta-700:#a3134a;
+  /* ── base: ink ──────────────────────────────── */
+  --ink-0:#f4f8f4; --ink-1:#dde5df; --ink-2:#a8b5b0; --ink-3:#859390; --ink-4:#64716f;
+  /* ── alpha utilities ────────────────────────── */
+  --lime-a08:rgba(124,255,61,.08); --lime-a16:rgba(124,255,61,.16); --lime-a32:rgba(124,255,61,.32);
+  --void-a60:rgba(15,20,30,.62); --void-a85:rgba(15,20,30,.84);
+  --hair:rgba(213,226,220,.13);
+
+  /* ── semantic: surfaces ─────────────────────── */
+  --bg-app:var(--void-0);
+  --surface-panel:var(--void-1);
+  --surface-card:var(--void-2);
+  --surface-raised:var(--void-3);
+  --surface-input:var(--void-well);
+  --surface-hover:rgba(213,226,220,.07);
+  --surface-active:var(--lime-a08);
+  --scrim:var(--void-a85);
+
+  /* ── semantic: text ─────────────────────────── */
+  --text-strong:var(--ink-0);
+  --text-body:var(--ink-1);
+  --text-muted:var(--ink-2);
+  --text-dim:var(--ink-3);
+  --text-on-signal:#121a12;
+  --text-link:var(--lime-500);
+  --text-link-hover:var(--lime-300);
+
+  /* ── semantic: lines ────────────────────────── */
+  --border-hair:var(--hair);
+  --border-line:var(--void-4);
+  --border-strong:var(--void-5);
+  --border-signal:var(--lime-a32);
+  --focus-ring:var(--lime-500);
+
+  /* ── semantic: signal roles ─────────────────── */
+  --signal-primary:var(--lime-500);
+  --signal-primary-dim:var(--lime-700);
+  --signal-running:var(--cyan-500);
+  --signal-warn:var(--amber-500);
+  --signal-fail:var(--magenta-500);
+  --signal-idle:var(--ink-3);
+
+  /* ── pipeline node states ───────────────────── */
+  --node-idle-fg:var(--ink-2); --node-idle-line:var(--void-4);
+  --node-running-fg:var(--cyan-500); --node-running-line:var(--cyan-700);
+  --node-ok-fg:var(--lime-500); --node-ok-line:var(--lime-700);
+  --node-warn-fg:var(--amber-500); --node-warn-line:var(--amber-700);
+  --node-fail-fg:var(--magenta-500); --node-fail-line:var(--magenta-700);
+}

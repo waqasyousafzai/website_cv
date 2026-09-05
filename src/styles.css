@@ -1,17 +1,174 @@
-
+/*
+ * Tailwind first, so its preflight lands before the design system's own base
+ * rules and the design system wins wherever the two overlap.
+ */
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+@import "./styles/tokens/fonts.css";
+@import "./styles/tokens/colors.css";
+@import "./styles/tokens/typography.css";
+@import "./styles/tokens/spacing.css";
+@import "./styles/tokens/effects.css";
+@import "./styles/tokens/motion.css";
+@import "./styles/tokens/base.css";
+@import "./styles/ds-components.css";
+
+/*
+ * The bridge between the two systems. Every entry points Tailwind's utility
+ * namespaces at a design token, so `bg-void-1` and `var(--void-1)` are the same
+ * value and the app layer can be written in utilities without hardcoding one
+ * colour, step or size.
+ *
+ * `inline` matters: it makes Tailwind emit `var(--void-1)` in the utility
+ * rather than redefining a variable of its own, which is what keeps the token
+ * files the single source of truth.
+ */
+@theme inline {
+	/* base ramps */
+	--color-void-0: var(--void-0);
+	--color-void-1: var(--void-1);
+	--color-void-2: var(--void-2);
+	--color-void-3: var(--void-3);
+	--color-void-4: var(--void-4);
+	--color-void-5: var(--void-5);
+	--color-void-well: var(--void-well);
+	--color-lime-100: var(--lime-100);
+	--color-lime-300: var(--lime-300);
+	--color-lime-500: var(--lime-500);
+	--color-lime-700: var(--lime-700);
+	--color-lime-900: var(--lime-900);
+	--color-amber-300: var(--amber-300);
+	--color-amber-500: var(--amber-500);
+	--color-amber-700: var(--amber-700);
+	--color-cyan-300: var(--cyan-300);
+	--color-cyan-500: var(--cyan-500);
+	--color-cyan-700: var(--cyan-700);
+	--color-magenta-300: var(--magenta-300);
+	--color-magenta-500: var(--magenta-500);
+	--color-magenta-700: var(--magenta-700);
+	--color-ink-0: var(--ink-0);
+	--color-ink-1: var(--ink-1);
+	--color-ink-2: var(--ink-2);
+	--color-ink-3: var(--ink-3);
+	--color-ink-4: var(--ink-4);
+
+	/* semantic surfaces, lines and ink */
+	--color-panel: var(--surface-panel);
+	--color-card: var(--surface-card);
+	--color-raised: var(--surface-raised);
+	--color-well: var(--surface-input);
+	--color-hair: var(--border-hair);
+	--color-line: var(--border-line);
+	--color-signal: var(--border-signal);
+	--color-strong: var(--text-strong);
+	--color-muted: var(--text-muted);
+	--color-dim: var(--text-dim);
+	--color-signal-primary: var(--signal-primary);
+	--color-signal-running: var(--signal-running);
+	--color-signal-warn: var(--signal-warn);
+	--color-signal-fail: var(--signal-fail);
+	--color-signal-idle: var(--signal-idle);
+
+	/* the 2px spacing substrate, plus the console's fixed frame sizes */
+	--spacing-s-0: var(--s-0);
+	--spacing-s-1: var(--s-1);
+	--spacing-s-2: var(--s-2);
+	--spacing-s-3: var(--s-3);
+	--spacing-s-4: var(--s-4);
+	--spacing-s-5: var(--s-5);
+	--spacing-s-6: var(--s-6);
+	--spacing-s-7: var(--s-7);
+	--spacing-s-8: var(--s-8);
+	--spacing-s-9: var(--s-9);
+	--spacing-s-10: var(--s-10);
+	--spacing-s-11: var(--s-11);
+	--spacing-s-12: var(--s-12);
+	--spacing-s-13: var(--s-13);
+	--spacing-rail: var(--rail-w);
+	--spacing-sidebar: var(--sidebar-w);
+	--spacing-inspector: var(--inspector-w);
+	--spacing-topbar: var(--topbar-h);
+	--spacing-statusbar: var(--statusbar-h);
+
+	/* type scale */
+	--text-micro: var(--fs-micro);
+	--text-caption: var(--fs-caption);
+	--text-meta: var(--fs-meta);
+	--text-lead: var(--fs-lead);
+	--text-h4: var(--fs-h4);
+	--text-h3: var(--fs-h3);
+	--text-h2: var(--fs-h2);
+	--text-h1: var(--fs-h1);
+	--text-hero: var(--fs-hero);
+
+	--tracking-display: var(--ls-display);
+	--tracking-label: var(--ls-label);
+	--tracking-tag: var(--ls-tag);
+	--tracking-mono: var(--ls-mono);
+
+	--radius-1: var(--r-1);
+	--radius-2: var(--r-2);
+	--radius-3: var(--r-3);
 }
 
+/*
+ * Font stacks are declared here rather than aliased, because a theme key can't
+ * reference a custom property of the same name. These three literals mirror
+ * `styles/tokens/fonts.css`; change them together.
+ */
+@theme {
+	--font-display: "Michroma", system-ui, sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	--font-sans: "Space Grotesk", "Helvetica Neue", system-ui, sans-serif;
+}
+
+/*
+ * The composed type roles are `font:` shorthands — family, size, weight and
+ * line-height in one token — which no Tailwind namespace can express, so they
+ * become utilities. Same for the effect tokens, whose names collide with
+ * Tailwind's own `--shadow-*` namespace.
+ */
+@utility font-data {
+	font: var(--type-data);
+}
+@utility font-label {
+	font: var(--type-label);
+}
+@utility font-body {
+	font: var(--type-body);
+}
+@utility font-body-mono {
+	font: var(--type-body-mono);
+}
+@utility font-lead {
+	font: var(--type-lead);
+}
+@utility text-glow {
+	text-shadow: var(--glow-text);
+}
+@utility shadow-panel {
+	box-shadow: var(--shadow-panel);
+}
+@utility shadow-card {
+	box-shadow: var(--shadow-card);
+}
+@utility shadow-pop {
+	box-shadow: var(--shadow-pop);
+}
+@utility shadow-glow {
+	box-shadow: var(--glow-primary);
+}
+@utility transition-hover {
+	transition: var(--t-hover);
+}
+
+/* The console fills the viewport and never scrolls as a page; panes scroll. */
 html,
 body,
 #app {
-  min-height: 100%;
+	height: 100%;
 }
 
 body {
-  margin: 0;
+	overflow: hidden;
 }
-
