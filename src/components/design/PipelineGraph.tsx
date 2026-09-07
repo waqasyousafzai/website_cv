@@ -4,6 +4,7 @@ import {
 	useCallback,
 	useEffect,
 	useRef,
+	useState,
 } from "react";
 import { cn } from "@/lib/utils";
 import type { IconName } from "./Icon";
@@ -37,8 +38,8 @@ export interface GraphViewport {
 	scrollLeft: number;
 	scrollTop: number;
 	/**
-	 * Canvas zoom. Fixed at 1 until fit-to-view lands; it is reported anyway so
-	 * overlay maths can be written in scaled coordinates from the start.
+	 * Canvas zoom: 1 at actual size, below 1 while `fit` is on. Overlays are drawn
+	 * unscaled, so anything pinned to a node has to multiply through this.
 	 */
 	scale: number;
 }
@@ -57,7 +58,13 @@ export interface PipelineGraphProps
 	nodeHeight?: number;
 	/** Canvas height. @default 320 */
 	height?: number | string;
-	/** Fires on mount, resize and scroll with the visible canvas metrics. */
+	/**
+	 * Scales the whole DAG down until it fits the visible canvas, and stops it
+	 * scrolling. Never magnifies: a canvas roomier than the graph is unchanged.
+	 * @default false
+	 */
+	fit?: boolean;
+	/** Fires on mount, resize, scroll and zoom with the visible canvas metrics. */
 	onViewport?: (m: GraphViewport) => void;
 	/** Overlay layer pinned to the visible canvas (does not scroll with the DAG). */
 	children?: ReactNode;
@@ -71,6 +78,7 @@ export function PipelineGraph({
 	nodeWidth = 176,
 	nodeHeight = 72,
 	height = 320,
+	fit = false,
 	onViewport,
 	children,
 	className,
@@ -92,17 +100,33 @@ export function PipelineGraph({
 	const extent = Math.max(...nodes.map((n) => n.x + nodeWidth), 0) + 24;
 	const depth = Math.max(...nodes.map((n) => n.y + nodeHeight), 0) + 24;
 	const scroller = useRef<HTMLDivElement>(null);
+	const [size, setSize] = useState({ w: 0, h: 0 });
+
+	// Both axes have to fit, and 1 is the ceiling: fit is a way of seeing the
+	// whole DAG, not a zoom control.
+	const scale =
+		fit && size.w > 0 && size.h > 0
+			? Math.min(1, size.w / extent, size.h / depth)
+			: 1;
+	// `report` is rebuilt when the zoom changes, which re-runs the listener effect
+	// below and republishes the viewport: a new scale is a viewport change like
+	// any other, and overlays position themselves in scaled coordinates.
 	const report = useCallback(() => {
 		const el = scroller.current;
-		if (el && onViewport)
-			onViewport({
-				width: el.clientWidth,
-				height: el.clientHeight,
-				scrollLeft: el.scrollLeft,
-				scrollTop: el.scrollTop,
-				scale: 1,
-			});
-	}, [onViewport]);
+		if (!el) return;
+		setSize((s) =>
+			s.w === el.clientWidth && s.h === el.clientHeight
+				? s
+				: { w: el.clientWidth, h: el.clientHeight },
+		);
+		onViewport?.({
+			width: el.clientWidth,
+			height: el.clientHeight,
+			scrollLeft: el.scrollLeft,
+			scrollTop: el.scrollTop,
+			scale,
+		});
+	}, [onViewport, scale]);
 
 	// The scroll-into-view effect must fire on selection alone — `byId`, `extent`
 	// and `depth` are rebuilt on every status tick, and listing them as deps would
@@ -110,6 +134,9 @@ export function PipelineGraph({
 	const latest = useRef({ byId, extent, depth, report });
 	latest.current = { byId, extent, depth, report };
 
+	// Measuring feeds `scale`, which feeds `report` — so this settles in one extra
+	// pass rather than looping: an unchanged size leaves `size` and therefore
+	// `report` identical, and the effect does not re-run.
 	useEffect(() => {
 		const el = scroller.current;
 		if (!el) return;
@@ -125,9 +152,21 @@ export function PipelineGraph({
 
 	useEffect(() => {
 		const el = scroller.current;
+		if (!el) return;
 		const { byId: map, extent: ext, depth: dep, report: send } = latest.current;
+		// Under fit the whole DAG is on screen from the origin, so there is nowhere
+		// to scroll to — but a scroll offset from before fit engaged would survive:
+		// the inner box keeps its unscaled layout size, and `overflow: hidden`
+		// would then leave the user unable to scroll it back. Reset to the origin,
+		// whatever is selected, which also gives the overlay the fresh reading it
+		// needs to re-anchor.
+		if (fit) {
+			if (el.scrollLeft || el.scrollTop) el.scrollTo({ left: 0, top: 0 });
+			else send();
+			return;
+		}
 		const n = selectedId ? map.get(selectedId) : undefined;
-		if (!el || !n) return;
+		if (!n) return;
 		// Both axes: on a short canvas the running stage can be below the fold,
 		// and an overlay pinned to it has to follow the node into view.
 		const wantX = Math.max(0, Math.min(n.x - 24, ext - el.clientWidth));
@@ -136,7 +175,7 @@ export function PipelineGraph({
 			Math.abs(el.scrollLeft - wantX) > 1 || Math.abs(el.scrollTop - wantY) > 1;
 		if (moved) el.scrollTo({ left: wantX, top: wantY });
 		else send();
-	}, [selectedId]);
+	}, [selectedId, fit]);
 
 	return (
 		<div
@@ -144,10 +183,25 @@ export function PipelineGraph({
 			style={{ height, ...style }}
 			{...rest}
 		>
-			<div className="ds-graph" ref={scroller}>
+			<div
+				className="ds-graph"
+				ref={scroller}
+				// Scaling is a transform, so the inner box keeps its full unscaled
+				// layout size. Without this the browser would offer scrollbars for a
+				// DAG that is visibly complete in frame.
+				style={fit ? { overflow: "hidden" } : undefined}
+			>
 				<div
 					className="ds-graph__inner"
-					style={{ minWidth: extent, minHeight: depth }}
+					style={{
+						minWidth: extent,
+						minHeight: depth,
+						transform: scale === 1 ? undefined : `scale(${scale})`,
+						transformOrigin: "0 0",
+						// `--dur-base` collapses to 0ms under prefers-reduced-motion, so
+						// the zoom needs no branch of its own.
+						transition: "transform var(--dur-base) var(--ease-out)",
+					}}
 				>
 					<svg
 						aria-hidden="true"

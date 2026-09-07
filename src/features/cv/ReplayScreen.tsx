@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
 	Badge,
@@ -166,13 +167,15 @@ export function ReplayScreen() {
 							))}
 						</div>
 						<LogStream height={148} lines={logs} />
-						<Button
-							block
-							leading={<Icon name="rotate-ccw" size={12} />}
-							size="sm"
-							variant="secondary"
-						>
-							Re-run this dag
+						{/* A real link, so the request survives a middle-click, a copied
+						    URL and the back button — the pipeline route validates and then
+						    consumes `run` itself. `asChild` drops `leading`, so the icon
+						    moves inside. */}
+						<Button asChild block size="sm" variant="secondary">
+							<Link search={{ run: true }} to="/pipeline">
+								<Icon name="rotate-ccw" size={12} />
+								Re-run this dag
+							</Link>
 						</Button>
 					</div>
 				</div>
