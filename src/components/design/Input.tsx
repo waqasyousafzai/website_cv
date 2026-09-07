@@ -41,6 +41,12 @@ export function Input(props: InputProps) {
 	const id = props.id ?? generated;
 	const description = error || hint;
 	const descriptionId = description ? `${generated}-description` : undefined;
+	const labelId = label ? `${generated}-label` : undefined;
+	// Two label elements point at the control, and browsers concatenate every
+	// associated label into the accessible name — which would fold a text affix
+	// into it. Naming the control from the visible label alone keeps the name
+	// exactly what the caption says.
+	const labelledBy = props["aria-labelledby"] ?? labelId;
 	const describedBy =
 		[props["aria-describedby"], descriptionId].filter(Boolean).join(" ") ||
 		undefined;
@@ -48,17 +54,22 @@ export function Input(props: InputProps) {
 	return (
 		<div className={cn("ds-field", className)} style={style}>
 			{label && (
-				<label className="ds-field__label" htmlFor={id}>
+				<label className="ds-field__label" htmlFor={id} id={labelId}>
 					{label}
 				</label>
 			)}
-			<span
+			{/* A second label, deliberately text-free: it makes the whole field
+			    chrome — padding and affixes included — a click target that focuses
+			    the control, which a plain wrapper element would not. The control is
+			    a descendant, so `htmlFor` only pins that association explicitly. */}
+			<label
 				className={cn(
 					"ds-input",
 					props.multiline && "ds-input--textarea",
 					error && "ds-input--error",
 					disabled && "ds-input--disabled",
 				)}
+				htmlFor={id}
 			>
 				{prefix && <span className="ds-input__affix">{prefix}</span>}
 				{props.multiline ? (
@@ -66,6 +77,7 @@ export function Input(props: InputProps) {
 						{...props}
 						aria-describedby={describedBy}
 						aria-invalid={invalid}
+						aria-labelledby={labelledBy}
 						id={id}
 					/>
 				) : (
@@ -73,11 +85,12 @@ export function Input(props: InputProps) {
 						{...props}
 						aria-describedby={describedBy}
 						aria-invalid={invalid}
+						aria-labelledby={labelledBy}
 						id={id}
 					/>
 				)}
 				{suffix && <span className="ds-input__affix">{suffix}</span>}
-			</span>
+			</label>
 			{description && (
 				<span
 					className={cn("ds-field__hint", error && "ds-field__hint--error")}
