@@ -36,6 +36,11 @@ export interface GraphViewport {
 	height: number;
 	scrollLeft: number;
 	scrollTop: number;
+	/**
+	 * Canvas zoom. Fixed at 1 until fit-to-view lands; it is reported anyway so
+	 * overlay maths can be written in scaled coordinates from the start.
+	 */
+	scale: number;
 }
 
 /** DAG canvas: gridded background, bezier edges, absolutely positioned stage nodes. */
@@ -81,7 +86,11 @@ export function PipelineGraph({
 		const mx = (x1 + x2) / 2;
 		return `M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`;
 	};
+	// The canvas is sized to the DAG in both axes, so overflow — and therefore
+	// scrolling — is deliberate rather than a side effect of where the
+	// absolutely positioned nodes happen to land.
 	const extent = Math.max(...nodes.map((n) => n.x + nodeWidth), 0) + 24;
+	const depth = Math.max(...nodes.map((n) => n.y + nodeHeight), 0) + 24;
 	const scroller = useRef<HTMLDivElement>(null);
 	const report = useCallback(() => {
 		const el = scroller.current;
@@ -91,14 +100,15 @@ export function PipelineGraph({
 				height: el.clientHeight,
 				scrollLeft: el.scrollLeft,
 				scrollTop: el.scrollTop,
+				scale: 1,
 			});
 	}, [onViewport]);
 
-	// The scroll-into-view effect must fire on selection alone — `byId` and
-	// `extent` are rebuilt on every status tick, and listing them as deps would
+	// The scroll-into-view effect must fire on selection alone — `byId`, `extent`
+	// and `depth` are rebuilt on every status tick, and listing them as deps would
 	// re-snap the canvas mid-run. A ref keeps them current without re-running.
-	const latest = useRef({ byId, extent, report });
-	latest.current = { byId, extent, report };
+	const latest = useRef({ byId, extent, depth, report });
+	latest.current = { byId, extent, depth, report };
 
 	useEffect(() => {
 		const el = scroller.current;
@@ -115,11 +125,16 @@ export function PipelineGraph({
 
 	useEffect(() => {
 		const el = scroller.current;
-		const { byId: map, extent: ext, report: send } = latest.current;
+		const { byId: map, extent: ext, depth: dep, report: send } = latest.current;
 		const n = selectedId ? map.get(selectedId) : undefined;
 		if (!el || !n) return;
-		const want = Math.max(0, Math.min(n.x - 24, ext - el.clientWidth));
-		if (Math.abs(el.scrollLeft - want) > 1) el.scrollLeft = want;
+		// Both axes: on a short canvas the running stage can be below the fold,
+		// and an overlay pinned to it has to follow the node into view.
+		const wantX = Math.max(0, Math.min(n.x - 24, ext - el.clientWidth));
+		const wantY = Math.max(0, Math.min(n.y - 24, dep - el.clientHeight));
+		const moved =
+			Math.abs(el.scrollLeft - wantX) > 1 || Math.abs(el.scrollTop - wantY) > 1;
+		if (moved) el.scrollTo({ left: wantX, top: wantY });
 		else send();
 	}, [selectedId]);
 
@@ -130,7 +145,10 @@ export function PipelineGraph({
 			{...rest}
 		>
 			<div className="ds-graph" ref={scroller}>
-				<div className="ds-graph__inner" style={{ minWidth: extent }}>
+				<div
+					className="ds-graph__inner"
+					style={{ minWidth: extent, minHeight: depth }}
+				>
 					<svg
 						aria-hidden="true"
 						className="ds-graph__edges"

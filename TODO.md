@@ -3,21 +3,26 @@
 Use `claude-hand-off` as the base and adapt the working behavior from
 `codex-hand-off`. Preserve Claude's file-based TanStack Router architecture,
 TypeScript component APIs, design tokens, Tailwind utilities, and Radix primitives.
-This checklist records planned work; it does not mark any implementation complete.
+This checklist records planned work. Step 1 is implemented; the rest is still
+planned.
 
 ## 1. Responsive layouts and callouts
 
-- [ ] Reimplement responsive behavior with Tailwind variants using custom
+- [x] Reimplement responsive behavior with Tailwind variants using custom
   breakpoints at 540, 850, and 1100px. Default `md:` and `lg:` values do not match.
-- [ ] Stack the inspector, wrap the topbar, and reduce navigation rail dimensions
+- [x] Stack the inspector, wrap the topbar, and reduce navigation rail dimensions
   as space narrows. Preserve token-backed styling; do not copy Codex's
   `!important` media-query layer or introduce its semantic class hooks.
-- [ ] Constrain pipeline callout width to the available canvas width and keep
+- [x] Constrain pipeline callout width to the available canvas width and keep
   callouts within the viewport.
-- [ ] Include vertical scrolling in callout positioning, accounting for graph
-  scaling when fit-to-view is enabled.
-- [ ] Verify narrow layouts and callout attachment while scrolling, including
+- [x] Include vertical scrolling in callout positioning, accounting for graph
+  scaling when fit-to-view is enabled. `GraphViewport.scale` is plumbed through
+  and the callout maths is written in scaled coordinates; the value stays 1
+  until fit-to-view lands below.
+- [x] Verify narrow layouts and callout attachment while scrolling, including
   widths immediately above and below each breakpoint.
+- [x] Keep the full callout scrollable on short canvases and size replay metric
+  columns to the available content width so values remain readable.
 
 ## 2. Complete the primary actions
 

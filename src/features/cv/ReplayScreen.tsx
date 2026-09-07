@@ -85,7 +85,7 @@ export function ReplayScreen() {
 				className="min-h-0 flex-1 overflow-auto bg-void-0"
 				style={{ backgroundImage: "var(--grid-coarse)" }}
 			>
-				<div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-s-8 p-s-8">
+				<div className="grid grid-cols-1 items-start gap-s-7 p-s-6 row:p-s-7 split:grid-cols-[minmax(0,1fr)_320px] split:gap-s-8 console:p-s-8">
 					<div className="flex min-w-0 flex-col gap-s-8">
 						<SectionHeader
 							index="REC"
@@ -135,7 +135,9 @@ export function ReplayScreen() {
 								</div>
 							</Card>
 						</div>
-						<div className="grid grid-cols-4 gap-s-5">
+						{/* Size columns to the space left beside history, keeping the
+						    longest value (99.98%) readable even at the split breakpoint. */}
+						<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,160px),1fr))] gap-s-5">
 							<CountStat
 								delta="+18% qoq"
 								label="Rows / day"
