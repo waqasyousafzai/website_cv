@@ -1,6 +1,7 @@
 import {
 	type CSSProperties,
 	type InputHTMLAttributes,
+	type MouseEvent,
 	type ReactNode,
 	type TextareaHTMLAttributes,
 	useId,
@@ -41,35 +42,49 @@ export function Input(props: InputProps) {
 	const id = props.id ?? generated;
 	const description = error || hint;
 	const descriptionId = description ? `${generated}-description` : undefined;
-	const labelId = label ? `${generated}-label` : undefined;
-	// Two label elements point at the control, and browsers concatenate every
-	// associated label into the accessible name — which would fold a text affix
-	// into it. Naming the control from the visible label alone keeps the name
-	// exactly what the caption says.
-	const labelledBy = props["aria-labelledby"] ?? labelId;
 	const describedBy =
 		[props["aria-describedby"], descriptionId].filter(Boolean).join(" ") ||
 		undefined;
 	const invalid = error ? true : props["aria-invalid"];
+	// The whole well is a click target, but only the caption may name the
+	// control. Wrapping the chrome in a second <label> would do both: browsers
+	// concatenate every associated label into the accessible name, so the
+	// affixes would join it, and the generated association would outrank a
+	// caller's `aria-label`. Forwarding the click keeps the naming untouched.
+	const focusControl = (event: MouseEvent<HTMLSpanElement>) => {
+		const interactive = (event.target as HTMLElement).closest<HTMLElement>(
+			"input, textarea, select, button, a[href], [tabindex]:not([tabindex='-1'])",
+		);
+		// A click that already landed on something focusable keeps its own
+		// behaviour: caret placement in the control, or an interactive affix.
+		// The match has to be inside the well — `closest` otherwise walks out
+		// into the surrounding page and finds, say, a dialog's tabindex="-1",
+		// which would swallow every click.
+		if (interactive && event.currentTarget.contains(interactive)) {
+			return;
+		}
+		event.preventDefault();
+		event.currentTarget.querySelector<HTMLElement>(".ds-input__el")?.focus();
+	};
 	return (
 		<div className={cn("ds-field", className)} style={style}>
 			{label && (
-				<label className="ds-field__label" htmlFor={id} id={labelId}>
+				<label className="ds-field__label" htmlFor={id}>
 					{label}
 				</label>
 			)}
-			{/* A second label, deliberately text-free: it makes the whole field
-			    chrome — padding and affixes included — a click target that focuses
-			    the control, which a plain wrapper element would not. The control is
-			    a descendant, so `htmlFor` only pins that association explicitly. */}
-			<label
+			{/* biome-ignore lint/a11y/noStaticElementInteractions: the well is not
+			    itself interactive — it only widens the hit area of the control it
+			    wraps, the way a <label> would. The control keeps every semantic
+			    and all keyboard behaviour, so there is no role to add here. */}
+			<span
 				className={cn(
 					"ds-input",
 					props.multiline && "ds-input--textarea",
 					error && "ds-input--error",
 					disabled && "ds-input--disabled",
 				)}
-				htmlFor={id}
+				onMouseDown={focusControl}
 			>
 				{prefix && <span className="ds-input__affix">{prefix}</span>}
 				{props.multiline ? (
@@ -77,7 +92,6 @@ export function Input(props: InputProps) {
 						{...props}
 						aria-describedby={describedBy}
 						aria-invalid={invalid}
-						aria-labelledby={labelledBy}
 						id={id}
 					/>
 				) : (
@@ -85,12 +99,11 @@ export function Input(props: InputProps) {
 						{...props}
 						aria-describedby={describedBy}
 						aria-invalid={invalid}
-						aria-labelledby={labelledBy}
 						id={id}
 					/>
 				)}
 				{suffix && <span className="ds-input__affix">{suffix}</span>}
-			</label>
+			</span>
 			{description && (
 				<span
 					className={cn("ds-field__hint", error && "ds-field__hint--error")}
