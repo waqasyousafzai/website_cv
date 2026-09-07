@@ -2,7 +2,6 @@ import {
 	type CSSProperties,
 	type HTMLAttributes,
 	type SyntheticEvent,
-	useEffect,
 	useRef,
 	useState,
 } from "react";
@@ -15,7 +14,7 @@ const tc = (s: number) =>
 /**
  * A console-styled frame for moving footage — a screen capture of a run, a demo reel.
  * Chrome only: a mono header with a record dot and timecode, a scanline overlay, a
- * hairline progress track. With no `src` it renders its empty state rather than a black box.
+ * hairline progress track. Missing or failed recordings render the empty state.
  */
 export interface VideoPanelProps extends HTMLAttributes<HTMLDivElement> {
 	/** Video file URL. Omit to render the empty state. */
@@ -26,7 +25,7 @@ export interface VideoPanelProps extends HTMLAttributes<HTMLDivElement> {
 	label?: string;
 	/** One mono line under the frame. */
 	caption?: string;
-	/** Fallback timecode string shown when there is no `src`, e.g. "01:12". */
+	/** Fallback timecode for missing or failed recordings, e.g. "01:12". */
 	duration?: string;
 	autoPlay?: boolean;
 	/** Default true — captures loop; they are texture, not content. */
@@ -47,7 +46,13 @@ export interface VideoPanelProps extends HTMLAttributes<HTMLDivElement> {
 	style?: CSSProperties;
 }
 
-export function VideoPanel({
+export function VideoPanel(props: VideoPanelProps) {
+	// Each recording owns its media element, timing, and failure state. A source
+	// change also detaches the old ref before any pending play rejection settles.
+	return <VideoPanelSession key={props.src} {...props} />;
+}
+
+function VideoPanelSession({
 	src,
 	poster,
 	label = "capture",
@@ -66,9 +71,11 @@ export function VideoPanel({
 	...rest
 }: VideoPanelProps) {
 	const ref = useRef<HTMLVideoElement>(null);
-	const [playing, setPlaying] = useState(autoPlay);
+	const [playing, setPlaying] = useState(false);
+	const [failed, setFailed] = useState(false);
 	const [at, setAt] = useState(0);
 	const [len, setLen] = useState(0);
+	const available = !!src && !failed;
 	// webm captures often report no duration until they have played through once,
 	// so the furthest point reached stands in for the total until one arrives.
 	const seen = useRef(0);
@@ -77,19 +84,32 @@ export function VideoPanel({
 		if (t > seen.current) seen.current = t;
 		setAt(t);
 	};
-	useEffect(() => {
-		const el = ref.current;
-		setPlaying(src ? !!el && !el.paused : false);
-	}, [src]);
-	const toggle = () => {
+	const fail = () => {
+		setFailed(true);
+		setPlaying(false);
+		setAt(0);
+		setLen(0);
+		seen.current = 0;
+	};
+	const syncPlayback = (e: SyntheticEvent<HTMLVideoElement>) => {
+		const el = e.currentTarget;
+		setPlaying(!el.paused && !el.ended);
+	};
+	const toggle = async () => {
 		const el = ref.current;
 		if (!el) return;
 		if (el.paused) {
-			el.play();
-			setPlaying(true);
+			try {
+				await el.play();
+			} catch {
+				if (ref.current !== el) return;
+				// Policy blocks and interrupted requests can be retried. Only a
+				// media error means the recording itself is unavailable.
+				if (el.error) fail();
+				else setPlaying(!el.paused && !el.ended);
+			}
 		} else {
 			el.pause();
-			setPlaying(false);
 		}
 	};
 	const readDuration = (e: SyntheticEvent<HTMLVideoElement>) => {
@@ -109,21 +129,25 @@ export function VideoPanel({
 				/>
 				<span className="ds-video__label">{label}</span>
 				<span className="ds-video__tc">
-					{src ? `${tc(at)} / ${tc(total || Number.NaN)}` : duration || "--:--"}
+					{available
+						? `${tc(at)} / ${tc(total || Number.NaN)}`
+						: duration || "--:--"}
 				</span>
 			</div>
 			<div className="ds-video__frame" style={{ height }}>
-				{src ? (
+				{available ? (
 					<video
 						autoPlay={autoPlay}
 						className="ds-video__el"
 						loop={loop}
 						muted={muted}
 						onDurationChange={readDuration}
+						onEnded={syncPlayback}
+						onError={fail}
 						onLoadedMetadata={readDuration}
-						onPause={() => setPlaying(false)}
-						onPlay={() => setPlaying(true)}
-						onPlaying={() => setPlaying(true)}
+						onPause={syncPlayback}
+						onPlay={syncPlayback}
+						onPlaying={syncPlayback}
 						onTimeUpdate={(e) => {
 							readDuration(e);
 							mark(e.currentTarget.currentTime);
@@ -142,7 +166,7 @@ export function VideoPanel({
 					</div>
 				)}
 				{scanlines && <div aria-hidden="true" className="ds-video__scan" />}
-				{src && (
+				{available && (
 					<button
 						aria-label={playing ? "Pause" : "Play"}
 						className="ds-video__hit"

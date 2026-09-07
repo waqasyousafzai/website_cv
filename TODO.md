@@ -3,8 +3,8 @@
 Use `claude-hand-off` as the base and adapt the working behavior from
 `codex-hand-off`. Preserve Claude's file-based TanStack Router architecture,
 TypeScript component APIs, design tokens, Tailwind utilities, and Radix primitives.
-This checklist records planned work. Step 1 is implemented; the rest is still
-planned.
+This checklist records progress. Steps 1 through 4 are implemented; steps 5
+through 7 are still planned.
 
 ## 1. Responsive layouts and callouts
 
@@ -64,10 +64,20 @@ planned.
 
 ## 4. VideoPanel resilience
 
-- [ ] Show the empty/failure state when a recording cannot load.
-- [ ] Handle rejection of explicit `play()` calls and keep playback controls in
-  sync with actual media events.
-- [ ] Verify missing recordings, playback failures, and switching recordings.
+- [x] Show the empty/failure state when a recording cannot load. Media errors
+  use the existing empty copy and fallback duration, clear progress, and remove
+  playback controls.
+- [x] Handle rejection of explicit `play()` calls and keep playback controls in
+  sync with actual media events, including playback ending. Blocked or
+  interrupted requests remain retryable unless the media element reports an
+  error. Each source owns fresh playback state; late rejections from a discarded
+  recording cannot affect its replacement.
+- [x] Verify missing recordings, playback failures, and switching recordings.
+  Browser checks covered absent/empty sources, 404 and invalid media, blocked
+  and interrupted play with retry, media errors during playback, autoplay,
+  external play/pause, non-looping completion, looping, source removal and
+  replacement, and pending rejections across source changes. Replay was checked
+  at 390 and 1280px; Biome, TypeScript, and the production build passed.
 
 ## 5. Accessibility
 
