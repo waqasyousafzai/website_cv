@@ -33,8 +33,14 @@ import { PANES } from "./Panes";
 import { useToast } from "./toast-context";
 
 const STAGE_MS = 1000;
-const CALLOUT_W = 300;
 const NODE_W = 176;
+/** Matches `.ds-callout`'s own width; the box shrinks below it, never above. */
+const CALLOUT_MAX_W = 300;
+const CALLOUT_MIN_W = 200;
+/** Length of the connector stub between node and callout. */
+const STUB = 16;
+/** Breathing room kept between the callout and the canvas edge. */
+const EDGE = 8;
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 const fmt = (s: number) =>
@@ -48,25 +54,35 @@ const idle = () =>
 
 /**
  * Places the callout beside its node without letting it leave the canvas: it
- * flips to the node's left when there is no room on the right, and is clamped
- * against the visible viewport rather than the node's own coordinates.
+ * narrows to fit, flips to the node's left when there is no room on the right,
+ * and is clamped against the visible viewport rather than the node's own
+ * coordinates.
  */
 function calloutBox(node: { x: number; y: number }, vp: GraphViewport) {
-	const vx = node.x - vp.scrollLeft;
-	const side = vx + NODE_W + 16 + CALLOUT_W + 8 > vp.width ? "left" : "right";
-	const raw = side === "right" ? vx + NODE_W + 16 : vx - CALLOUT_W - 16;
-	const left = Math.max(8, Math.min(raw, vp.width - CALLOUT_W - 8));
-	const want = Math.min(248, Math.max(120, vp.height - 16));
-	const top = Math.max(
-		8,
-		Math.min(node.y - 8, Math.max(8, vp.height - want - 8)),
+	// The node's position as the eye sees it. The DAG scrolls in both axes and —
+	// once fit-to-view lands — scales, while the overlay does neither, so both
+	// have to be undone here.
+	const vx = node.x * vp.scale - vp.scrollLeft;
+	const vy = node.y * vp.scale - vp.scrollTop;
+	const nodeW = NODE_W * vp.scale;
+
+	// Width comes first: on a phone-width canvas the box is narrower than the
+	// design's 300px, and every horizontal clamp below depends on knowing that.
+	const width = Math.max(
+		CALLOUT_MIN_W,
+		Math.min(CALLOUT_MAX_W, vp.width - EDGE * 2),
 	);
-	return {
-		side,
-		left,
-		top,
-		maxHeight: Math.max(120, vp.height - top - 16),
-	} as const;
+	const side = vx + nodeW + STUB + width + EDGE > vp.width ? "left" : "right";
+	const raw = side === "right" ? vx + nodeW + STUB : vx - width - STUB;
+	const left = Math.max(EDGE, Math.min(raw, vp.width - width - EDGE));
+
+	// `want` is only the height reserved when clamping `top`, so a callout near
+	// the foot of the canvas still has somewhere to sit. The cap itself stays the
+	// space actually left below it — the box is content-sized under that.
+	const want = Math.min(248, Math.max(0, vp.height - EDGE * 2));
+	const top = Math.max(EDGE, Math.min(vy - EDGE, vp.height - want - EDGE));
+	const maxHeight = Math.max(0, vp.height - top - EDGE * 2);
+	return { side, left, top, width, maxHeight } as const;
 }
 
 export function PipelineScreen() {
@@ -86,6 +102,7 @@ export function PipelineScreen() {
 		height: 280,
 		scrollLeft: 0,
 		scrollTop: 0,
+		scale: 1,
 	});
 	const timer = useRef<number | undefined>(undefined);
 	const tailId = useId();
@@ -152,9 +169,12 @@ export function PipelineScreen() {
 	);
 
 	return (
-		<div className="flex min-h-0 flex-1">
-			<div className="flex min-w-0 flex-1 flex-col">
-				<div className="flex items-center gap-s-5 border-hair border-b px-s-7 py-s-5">
+		// Below `split:` the inspector stacks under the graph and the screen
+		// becomes one scroll region; at and above it, the console is a locked two
+		// column frame again and each pane scrolls on its own.
+		<div className="flex min-h-0 flex-1 flex-col overflow-y-auto split:flex-row split:overflow-hidden">
+			<div className="flex min-w-0 flex-none flex-col split:min-h-0 split:flex-1">
+				<div className="flex flex-wrap items-center gap-s-5 border-hair border-b px-s-5 py-s-5 row:flex-nowrap console:px-s-7">
 					<Button
 						disabled={state === "running"}
 						leading={
@@ -172,7 +192,7 @@ export function PipelineScreen() {
 					>
 						Download CV
 					</Button>
-					<div className="ml-auto flex items-center gap-s-7">
+					<div className="ml-auto flex items-center gap-s-5 console:gap-s-7">
 						<Switch
 							checked={tail}
 							id={tailId}
@@ -186,7 +206,7 @@ export function PipelineScreen() {
 						</Tooltip>
 					</div>
 				</div>
-				<div className="relative min-h-0 flex-1">
+				<div className="relative h-[320px] flex-none split:h-auto split:min-h-0 split:flex-1">
 					<PipelineGraph
 						edges={edges}
 						height="100%"
@@ -219,10 +239,18 @@ export function PipelineScreen() {
 								}
 								side={box.side}
 								status={status[openNode.id]}
+								// Inline, because `.ds-callout` is an unlayered design system
+								// rule no utility can override — and this box is measured, not
+								// a breakpoint away.
 								style={{
 									left: box.left,
 									top: box.top,
+									width: box.width,
 									maxHeight: box.maxHeight,
+									// On short canvases the fixed header and footer alone can
+									// exceed the cap. Scroll the entire panel in that case.
+									display: box.maxHeight < 200 ? "block" : undefined,
+									overflowY: box.maxHeight < 200 ? "auto" : undefined,
 								}}
 								title={openNode.label}
 							>
@@ -236,7 +264,7 @@ export function PipelineScreen() {
 											key={k}
 										>
 											<span className="w-[88px] flex-none text-dim">{k}</span>
-											<span className="text-ink-1">{v}</span>
+											<span className="min-w-0 text-ink-1">{v}</span>
 										</div>
 									))}
 								</div>
@@ -255,7 +283,12 @@ export function PipelineScreen() {
 					progress={progress}
 					right={
 						<>
-							<Badge status="idle">analytics_wh · XS</Badge>
+							{/* The strip clips rather than wraps, so the verbose badge steps
+							    aside on a phone. `contents` keeps the badge a runbar flex
+							    item — `hidden` on the Badge itself would lose to `.ds-badge`. */}
+							<span className="hidden row:contents">
+								<Badge status="idle">analytics_wh · XS</Badge>
+							</span>
 							<Badge status={state === "ok" ? "ok" : "idle"}>prod</Badge>
 						</>
 					}
@@ -264,8 +297,8 @@ export function PipelineScreen() {
 				/>
 				<MetricTicker items={TICKER} />
 			</div>
-			<div className="flex min-h-0 w-inspector flex-none flex-col border-hair border-l bg-panel">
-				<div className="px-s-7 pt-s-5">
+			<div className="flex w-full flex-none flex-col border-hair border-t bg-panel split:min-h-0 split:w-inspector split:border-t-0 split:border-l">
+				<div className="px-s-5 pt-s-5 console:px-s-7">
 					<Tabs
 						items={[
 							{ id: "stage", label: "Stage" },
@@ -275,7 +308,7 @@ export function PipelineScreen() {
 						value={tab}
 					/>
 				</div>
-				<div className="flex-1 overflow-auto p-s-7">
+				<div className="p-s-6 split:min-h-0 split:flex-1 split:overflow-auto console:p-s-7">
 					{tab === "stage" ? (
 						<Pane />
 					) : (

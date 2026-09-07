@@ -123,6 +123,23 @@
 }
 
 /*
+ * Three breakpoints sized to this console rather than inherited: the topbar
+ * fits one row at 540, the inspector splits off to the side at 850, and the
+ * full chrome — 64px rail, throughput sparkline — arrives at 1100. Tailwind's
+ * own scale is cleared first, so no `md:` can be written here against a value
+ * that means nothing to this layout.
+ *
+ * Everything downstream is mobile-first: base classes describe the narrowest
+ * layout and `row:` / `split:` / `console:` add the console back.
+ */
+@theme {
+	--breakpoint-*: initial;
+	--breakpoint-row: 540px;
+	--breakpoint-split: 850px;
+	--breakpoint-console: 1100px;
+}
+
+/*
  * The composed type roles are `font:` shorthands — family, size, weight and
  * line-height in one token — which no Tailwind namespace can express, so they
  * become utilities. Same for the effect tokens, whose names collide with
@@ -162,7 +179,11 @@
 	transition: var(--t-hover);
 }
 
-/* The console fills the viewport and never scrolls as a page; panes scroll. */
+/*
+ * The console fills the viewport and the page itself never scrolls. Panes
+ * scroll instead — and below `split:`, where the inspector stacks under the
+ * graph, the pipeline screen becomes one scroll region of its own.
+ */
 html,
 body,
 #app {

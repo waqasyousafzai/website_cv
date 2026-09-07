@@ -43,14 +43,17 @@ export function BootScreen() {
 
 	return (
 		<div
-			className="flex h-full items-center justify-center bg-void-0"
+			// `items-center-safe`, not `items-center`: on a viewport too short for the
+			// panel, centring would push its top above the scroll origin and put it
+			// out of reach. Safe alignment falls back to start once it overflows.
+			className="flex h-full items-center-safe justify-center overflow-y-auto bg-void-0 p-s-5"
 			style={{ backgroundImage: "var(--vignette),var(--grid-coarse)" }}
 		>
 			<div
-				className="w-[620px] border border-hair bg-panel p-s-11 shadow-panel"
+				className="w-full max-w-[620px] border border-hair bg-panel p-s-7 shadow-panel row:p-s-9 console:p-s-11"
 				style={{ clipPath: "var(--notch-14)" }}
 			>
-				<div className="font-display text-h2 text-ink-0 leading-[1.05] tracking-display">
+				<div className="font-display text-h3 text-ink-0 leading-[1.05] tracking-display row:text-h2">
 					WAQAS
 					<br />
 					YOUSAFZAI<span className="text-lime-500">.</span>
