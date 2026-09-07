@@ -106,6 +106,7 @@ export function PipelineScreen() {
 	const [tab, setTab] = useState("stage");
 	const [tail, setTail] = useState(true);
 	const [fit, setFit] = useState(false);
+	const [reveal, setReveal] = useState(0);
 	const [vp, setVp] = useState<GraphViewport>({
 		width: 520,
 		height: 280,
@@ -114,6 +115,7 @@ export function PipelineScreen() {
 		scale: 1,
 	});
 	const timer = useRef<number | undefined>(undefined);
+	const inspector = useRef<HTMLDivElement>(null);
 	const tailId = useId();
 
 	const start = useCallback(() => {
@@ -143,6 +145,41 @@ export function PipelineScreen() {
 			message: `${CV_FILENAME} · ${(bytes / 1024).toFixed(1)} KB`,
 		});
 	};
+
+	// The callout hands its stage over to the panel that keeps it: select the node
+	// the callout is describing rather than trusting `sel` to already agree, show
+	// the pane that renders it, and ask for the panel to be revealed.
+	const openInInspector = (id: NodeId) => {
+		setSel(id);
+		setTab("stage");
+		setReveal((n) => n + 1);
+	};
+
+	// Keyed on a counter rather than on `tab` or `sel`: the button's most common
+	// press changes neither — the Stage tab is already showing that stage — and the
+	// reveal still has to happen. Waiting for the commit matters too, since
+	// arriving from Schema grows the panel and with it how far the screen can
+	// scroll.
+	useEffect(() => {
+		const el = inspector.current;
+		if (!reveal || !el) return;
+		// Below `split:` this scrolls the screen's one scroll region down to the
+		// stacked panel. At and above it the two columns are height-locked and that
+		// region has nothing to scroll, so the same call is a no-op and no media
+		// query is needed. `--dur-*` collapsing under reduced motion does not reach
+		// programmatic scrolling, so the check is made here.
+		el.scrollIntoView({
+			behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+				? "auto"
+				: "smooth",
+			block: "start",
+		});
+		// The button the press came from may now be behind the fold, and Tab would
+		// otherwise carry on from there. `preventScroll` leaves the scroll above to
+		// finish; a mouse press still gets no ring, because `:focus-visible` answers
+		// a programmatic focus only after keyboard interaction.
+		el.focus({ preventScroll: true });
+	}, [reveal]);
 
 	useEffect(() => {
 		if (state !== "running" || step < 0) return;
@@ -257,7 +294,7 @@ export function PipelineScreen() {
 							<NodeCallout
 								actions={
 									<Button
-										onClick={() => setTab("stage")}
+										onClick={() => openInInspector(openNode.id)}
 										size="sm"
 										variant="secondary"
 									>
@@ -332,7 +369,12 @@ export function PipelineScreen() {
 				/>
 				<MetricTicker items={TICKER} />
 			</div>
-			<div className="flex w-full flex-none flex-col border-hair border-t bg-panel split:min-h-0 split:w-inspector split:border-t-0 split:border-l">
+			<div
+				className="flex w-full flex-none flex-col border-hair border-t bg-panel split:min-h-0 split:w-inspector split:border-t-0 split:border-l"
+				ref={inspector}
+				// A destination for Open in inspector, not a tab stop.
+				tabIndex={-1}
+			>
 				<div className="px-s-5 pt-s-5 console:px-s-7">
 					<Tabs
 						items={[

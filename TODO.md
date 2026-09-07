@@ -49,9 +49,18 @@ planned.
 
 ## 3. Inspector navigation
 
-- [ ] Make Open in inspector select the correct content and scroll the inspector
-  into view when it is stacked below the graph.
-- [ ] Verify the action in both desktop and stacked layouts.
+- [x] Make Open in inspector select the correct content and scroll the inspector
+  into view when it is stacked below the graph. The action selects the callout's
+  own node rather than relying on `sel` and `openId` happening to agree, and
+  reveals the panel through a counter-keyed effect: the commonest press changes
+  neither `tab` nor `sel`, and the scroll has to wait for the commit because
+  arriving from Schema grows the panel and with it how far the screen can
+  scroll. Focus follows the scroll, so Tab does not resume behind the fold.
+- [x] Verify the action in both desktop and stacked layouts. No media query is
+  needed: at and above `split:` the two columns are height-locked and the same
+  call is a no-op. Covered 800, 849, 851 and 1200px, arrival from the Schema
+  tab, a press mid-run, keyboard and mouse activation, and both answers to
+  prefers-reduced-motion.
 
 ## 4. VideoPanel resilience
 
