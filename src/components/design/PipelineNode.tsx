@@ -5,6 +5,14 @@ import type { NodeStatus } from "./types";
 
 export type { NodeStatus };
 
+const STATUS_LABELS: Record<NodeStatus, string> = {
+	idle: "idle",
+	running: "running",
+	ok: "completed",
+	warn: "warning",
+	fail: "failed",
+};
+
 /** One stage in the CV pipeline: source, ingest, transform, model, serve. */
 export interface PipelineNodeProps
 	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
@@ -49,6 +57,7 @@ export function PipelineNode({
 			type="button"
 			{...rest}
 		>
+			<span className="sr-only">{STATUS_LABELS[status]}: </span>
 			<div className="ds-node__top">
 				<span className="ds-node__icon">
 					<Icon name={icon} size={15} />

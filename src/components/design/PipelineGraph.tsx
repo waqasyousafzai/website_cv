@@ -178,8 +178,11 @@ export function PipelineGraph({
 	}, [selectedId, fit]);
 
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: A graph group preserves the component's div-based layout and HTML API.
 		<div
+			aria-label="CV pipeline"
 			className={cn("ds-graph-frame", className)}
+			role="group"
 			style={{ height, ...style }}
 			{...rest}
 		>

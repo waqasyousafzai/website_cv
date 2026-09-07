@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { type MouseEvent, type RefObject, useRef, useState } from "react";
 import { Badge, Icon } from "@/components/design";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -17,7 +17,11 @@ export const Route = createFileRoute("/_app")({ component: AppLayout });
  */
 function AppLayout() {
 	const [contact, setContact] = useState(false);
-	const open = () => setContact(true);
+	const contactOpener = useRef<HTMLButtonElement | null>(null);
+	const open = (event: MouseEvent<HTMLButtonElement>) => {
+		contactOpener.current = event.currentTarget;
+		setContact(true);
+	};
 	return (
 		<TooltipProvider>
 			<ToastProvider>
@@ -42,7 +46,11 @@ function AppLayout() {
 						<Outlet />
 					</div>
 				</div>
-				<ContactDialog onOpenChange={setContact} open={contact} />
+				<ContactDialog
+					onOpenChange={setContact}
+					open={contact}
+					opener={contactOpener}
+				/>
 			</ToastProvider>
 		</TooltipProvider>
 	);
@@ -51,15 +59,27 @@ function AppLayout() {
 function ContactDialog({
 	open,
 	onOpenChange,
+	opener,
 }: {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	opener: RefObject<HTMLButtonElement | null>;
 }) {
 	const push = useToast();
 	const Contact = PANES.contact;
 	return (
 		<Dialog onOpenChange={onOpenChange} open={open}>
-			<DialogContent title="serve_contact">
+			<DialogContent
+				onCloseAutoFocus={(event) => {
+					// These two shell buttons are outside Radix's DialogTrigger.
+					// Its default restoration has no trigger ref to focus.
+					if (opener.current?.isConnected) {
+						event.preventDefault();
+						opener.current.focus();
+					}
+				}}
+				title="serve_contact"
+			>
 				<Contact
 					onSend={() => {
 						onOpenChange(false);

@@ -3,8 +3,8 @@
 Use `claude-hand-off` as the base and adapt the working behavior from
 `codex-hand-off`. Preserve Claude's file-based TanStack Router architecture,
 TypeScript component APIs, design tokens, Tailwind utilities, and Radix primitives.
-This checklist records progress. Steps 1 through 4 are implemented; steps 5
-through 7 are still planned.
+This checklist records progress. Steps 1 through 4 are implemented; step 5 is
+implemented with spoken toast verification pending. Steps 6 and 7 are planned.
 
 ## 1. Responsive layouts and callouts
 
@@ -81,15 +81,39 @@ through 7 are still planned.
 
 ## 5. Accessibility
 
-- [ ] Associate Input hints and errors explicitly with their controls, preserving
-  Claude's richer API. Keep the accessible label separate from the description.
-- [ ] Give the graph an accessible name and expose each node's current state in
-  its button label. Do not assume label changes are live announcements.
-- [ ] Give the tabs list a meaningful accessible name.
-- [ ] Test dialog focus restoration with the actual openers and keyboard flows.
-  Add an override only if default restoration fails.
+- [x] Associate Input hints and errors explicitly with their controls, preserving
+  Claude's richer API. The label contains only label text; the displayed error
+  or hint has a stable description ID merged with caller-supplied IDs. Errors
+  set `aria-invalid`, otherwise the caller's invalid state is retained. Browser
+  fixtures covered input/textarea, ReactNode content, affixes, disabled fields,
+  explicit/generated IDs, external descriptions, both/neither hint and error,
+  native values/textarea rows, label-click focus, unique IDs, and hint/error
+  transitions without changing IDs.
+- [x] Give the graph the accessible group name "CV pipeline" and expose each
+  node's current state through visually hidden button text. All five states
+  (idle, running, completed, warning, failed) were checked in the accessibility
+  tree, including ReactNode labels and selected state. Enter/Space selection
+  and a full run were checked. Label changes are not live announcements.
+- [x] Name the tab lists "Pipeline inspector" and "Replay metrics". Verify
+  arrow-key focus and selection on both strips.
+- [x] Test dialog focus restoration with the actual openers and keyboard flows.
+  Both openers initially lost focus to the body after Escape. A contact-only
+  override now restores the captured activating button when still connected;
+  the shared Radix primitive is unchanged. Desktop checks covered both openers
+  with Enter, Space, and pointer activation, each closed by Escape, Close, and
+  Send, plus outside dismissal and forward/backward focus trapping. Narrow
+  checks repeated both openers and focus trapping. Layouts checked at 390 and
+  1280px; no visual token changes.
 - [ ] Verify toast announcements before changing their semantics: `<output>`
   already has an implicit status role with polite live-region behavior.
+  Browser accessibility snapshots confirmed status elements for contact, run
+  completion, and repeated identical contact notifications. Semantics remain
+  unchanged. Spoken announcements still require a manual screen-reader check;
+  the available browser interface cannot verify speech or announcement timing.
+
+Validation passed: `npm run check`, `npx tsc --noEmit`, and `npm run build`.
+A fresh production preview also passed both Contact opener/send flows and
+direct `/pipeline` and `/replay` loading without console warnings or errors.
 
 ## 6. Settings and source access
 

@@ -377,6 +377,7 @@ export function PipelineScreen() {
 			>
 				<div className="px-s-5 pt-s-5 console:px-s-7">
 					<Tabs
+						aria-label="Pipeline inspector"
 						items={[
 							{ id: "stage", label: "Stage" },
 							{ id: "schema", label: "Schema" },

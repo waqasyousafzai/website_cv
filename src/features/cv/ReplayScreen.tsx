@@ -106,6 +106,7 @@ export function ReplayScreen() {
 						/>
 						<div className="flex flex-col gap-s-6">
 							<Tabs
+								aria-label="Replay metrics"
 								items={[
 									{ id: "throughput", label: "Throughput" },
 									{ id: "duration", label: "Run duration" },

@@ -39,11 +39,19 @@ export function Input(props: InputProps) {
 		props;
 	const generated = useId();
 	const id = props.id ?? generated;
+	const description = error || hint;
+	const descriptionId = description ? `${generated}-description` : undefined;
+	const describedBy =
+		[props["aria-describedby"], descriptionId].filter(Boolean).join(" ") ||
+		undefined;
+	const invalid = error ? true : props["aria-invalid"];
 	return (
-		// The control sits two levels down inside a sub-component, so the label is
-		// tied to it by id rather than by nesting alone.
-		<label className={cn("ds-field", className)} htmlFor={id} style={style}>
-			{label && <span className="ds-field__label">{label}</span>}
+		<div className={cn("ds-field", className)} style={style}>
+			{label && (
+				<label className="ds-field__label" htmlFor={id}>
+					{label}
+				</label>
+			)}
 			<span
 				className={cn(
 					"ds-input",
@@ -54,20 +62,31 @@ export function Input(props: InputProps) {
 			>
 				{prefix && <span className="ds-input__affix">{prefix}</span>}
 				{props.multiline ? (
-					<Multiline {...props} id={id} />
+					<Multiline
+						{...props}
+						aria-describedby={describedBy}
+						aria-invalid={invalid}
+						id={id}
+					/>
 				) : (
-					<SingleLine {...props} id={id} />
+					<SingleLine
+						{...props}
+						aria-describedby={describedBy}
+						aria-invalid={invalid}
+						id={id}
+					/>
 				)}
 				{suffix && <span className="ds-input__affix">{suffix}</span>}
 			</span>
-			{(error || hint) && (
+			{description && (
 				<span
 					className={cn("ds-field__hint", error && "ds-field__hint--error")}
+					id={descriptionId}
 				>
-					{error || hint}
+					{description}
 				</span>
 			)}
-		</label>
+		</div>
 	);
 }
 
