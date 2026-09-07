@@ -17,8 +17,8 @@ planned.
   callouts within the viewport.
 - [x] Include vertical scrolling in callout positioning, accounting for graph
   scaling when fit-to-view is enabled. `GraphViewport.scale` is plumbed through
-  and the callout maths is written in scaled coordinates; the value stays 1
-  until fit-to-view lands below.
+  and the callout maths is written in scaled coordinates; step 2 made the value
+  real, and the maths needed no change.
 - [x] Verify narrow layouts and callout attachment while scrolling, including
   widths immediately above and below each breakpoint.
 - [x] Keep the full callout scrollable on short canvases and size replay metric
@@ -26,16 +26,26 @@ planned.
 
 ## 2. Complete the primary actions
 
-- [ ] Implement Download CV using the local CV data and a downloadable text Blob
-  named `Waqas-Yousafzai-CV.txt`.
-- [ ] Implement Fit to view in PipelineGraph and wire its active state to the
-  corresponding control.
-- [ ] Implement replay's Re-run this DAG with a validated, typed search parameter:
-  navigate to `/pipeline` with `search: { run: true }`.
-- [ ] Consume the run parameter with `replace: true` once execution starts.
+- [x] Implement Download CV using the local CV data and a downloadable text Blob
+  named `Waqas-Yousafzai-CV.txt`. `cv-text.ts` renders the whole `CV` object, so
+  the file and the inspector panes cannot drift apart.
+- [x] Implement Fit to view in PipelineGraph and wire its active state to the
+  corresponding control. A sticky toggle: it scales the DAG to the canvas, never
+  magnifies past 1:1, and stops the canvas scrolling while engaged. Engaging it
+  resets the scroll offset — the inner box keeps its unscaled layout size, so a
+  leftover offset would otherwise be stranded behind `overflow: hidden`.
+- [x] Implement replay's Re-run this DAG with a validated, typed search parameter:
+  navigate to `/pipeline` with `search: { run: true }`. The control is a real
+  `Link`, so the request survives a copied URL and the back button.
+- [x] Consume the run parameter with `replace: true` once execution starts.
   Avoid a remount-key workaround and ensure ordinary navigation cannot retrigger
-  a previously requested run.
-- [ ] Verify direct links, repeated reruns, and browser back/forward navigation.
+  a previously requested run. `validateSearch` must overwrite `run` with
+  `undefined` rather than omit it: a match's search is its parent's merged with
+  the route's result, and no route above validates anything, so an omitted key
+  would let `?run=anything` through as a truthy string.
+- [x] Verify direct links, repeated reruns, and browser back/forward navigation.
+  Covered `?run=true`, `?run=1`, `?run=nonsense&x=1`, a plain reload, three
+  consecutive reruns, and back/forward across the consumed entry.
 
 ## 3. Inspector navigation
 

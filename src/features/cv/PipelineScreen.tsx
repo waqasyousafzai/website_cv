@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { getRouteApi } from "@tanstack/react-router";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
 	Badge,
 	Card,
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
+import { CV_FILENAME, downloadCvText } from "./cv-text";
 import {
 	CV,
 	EDGES,
@@ -31,6 +33,10 @@ import {
 import { TICKER } from "./live";
 import { PANES } from "./Panes";
 import { useToast } from "./toast-context";
+
+// The screen lives outside its route module, so it reaches the route through the
+// registry rather than importing `Route` back out of a file that imports it.
+const route = getRouteApi("/_app/pipeline");
 
 const STAGE_MS = 1000;
 const NODE_W = 176;
@@ -87,6 +93,8 @@ function calloutBox(node: { x: number; y: number }, vp: GraphViewport) {
 
 export function PipelineScreen() {
 	const push = useToast();
+	const { run: requested } = route.useSearch();
+	const navigate = route.useNavigate();
 	const [status, setStatus] = useState<Record<NodeId, Status>>(idle);
 	const [sel, setSel] = useState<NodeId>("src_profile");
 	const [openId, setOpenId] = useState<NodeId | null>("src_profile");
@@ -97,6 +105,7 @@ export function PipelineScreen() {
 	const [step, setStep] = useState(-1);
 	const [tab, setTab] = useState("stage");
 	const [tail, setTail] = useState(true);
+	const [fit, setFit] = useState(false);
 	const [vp, setVp] = useState<GraphViewport>({
 		width: 520,
 		height: 280,
@@ -107,13 +116,32 @@ export function PipelineScreen() {
 	const timer = useRef<number | undefined>(undefined);
 	const tailId = useId();
 
-	const run = () => {
+	const start = useCallback(() => {
 		setStatus(idle());
 		setLines([
 			{ ts: "00:00.004", level: "info", msg: "dag run started · full refresh" },
 		]);
 		setState("running");
 		setStep(0);
+	}, []);
+
+	// A run asked for through the URL. Consuming it with `replace` the moment
+	// execution starts leaves plain `/pipeline` in history, so the flag is spent
+	// exactly once: back, forward and a reload all land on a URL that asks for
+	// nothing. A fresh request from replay pushes `?run=true` again and re-fires.
+	useEffect(() => {
+		if (!requested) return;
+		start();
+		navigate({ replace: true, search: {}, to: "/pipeline" });
+	}, [requested, start, navigate]);
+
+	const download = () => {
+		const bytes = downloadCvText();
+		push({
+			status: "ok",
+			title: "CV downloaded",
+			message: `${CV_FILENAME} · ${(bytes / 1024).toFixed(1)} KB`,
+		});
 	};
 
 	useEffect(() => {
@@ -180,13 +208,14 @@ export function PipelineScreen() {
 						leading={
 							<Icon name={state === "running" ? "loader" : "play"} size={12} />
 						}
-						onClick={run}
+						onClick={start}
 						size="sm"
 					>
 						{state === "running" ? "Running" : "Run pipeline"}
 					</Button>
 					<Button
 						leading={<Icon name="download" size={12} />}
+						onClick={download}
 						size="sm"
 						variant="secondary"
 					>
@@ -199,9 +228,14 @@ export function PipelineScreen() {
 							label="Live tail"
 							onCheckedChange={setTail}
 						/>
-						<Tooltip content="Fit to view">
-							<IconButton bordered label="Fit">
-								<Icon name="maximize" size={14} />
+						<Tooltip content={fit ? "Actual size" : "Fit to view"}>
+							<IconButton
+								active={fit}
+								bordered
+								label={fit ? "Actual size" : "Fit to view"}
+								onClick={() => setFit((f) => !f)}
+							>
+								<Icon name={fit ? "minimize" : "maximize"} size={14} />
 							</IconButton>
 						</Tooltip>
 					</div>
@@ -209,6 +243,7 @@ export function PipelineScreen() {
 				<div className="relative h-[320px] flex-none split:h-auto split:min-h-0 split:flex-1">
 					<PipelineGraph
 						edges={edges}
+						fit={fit}
 						height="100%"
 						nodes={nodes}
 						onSelect={(id) => {
