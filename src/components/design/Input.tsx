@@ -1,6 +1,7 @@
 import {
 	type CSSProperties,
 	type InputHTMLAttributes,
+	type MouseEvent,
 	type ReactNode,
 	type TextareaHTMLAttributes,
 	useId,
@@ -39,11 +40,43 @@ export function Input(props: InputProps) {
 		props;
 	const generated = useId();
 	const id = props.id ?? generated;
+	const description = error || hint;
+	const descriptionId = description ? `${generated}-description` : undefined;
+	const describedBy =
+		[props["aria-describedby"], descriptionId].filter(Boolean).join(" ") ||
+		undefined;
+	const invalid = error ? true : props["aria-invalid"];
+	// The whole well is a click target, but only the caption may name the
+	// control. Wrapping the chrome in a second <label> would do both: browsers
+	// concatenate every associated label into the accessible name, so the
+	// affixes would join it, and the generated association would outrank a
+	// caller's `aria-label`. Forwarding the click keeps the naming untouched.
+	const focusControl = (event: MouseEvent<HTMLSpanElement>) => {
+		const interactive = (event.target as HTMLElement).closest<HTMLElement>(
+			"input, textarea, select, button, a[href], [tabindex]:not([tabindex='-1'])",
+		);
+		// A click that already landed on something focusable keeps its own
+		// behaviour: caret placement in the control, or an interactive affix.
+		// The match has to be inside the well — `closest` otherwise walks out
+		// into the surrounding page and finds, say, a dialog's tabindex="-1",
+		// which would swallow every click.
+		if (interactive && event.currentTarget.contains(interactive)) {
+			return;
+		}
+		event.preventDefault();
+		event.currentTarget.querySelector<HTMLElement>(".ds-input__el")?.focus();
+	};
 	return (
-		// The control sits two levels down inside a sub-component, so the label is
-		// tied to it by id rather than by nesting alone.
-		<label className={cn("ds-field", className)} htmlFor={id} style={style}>
-			{label && <span className="ds-field__label">{label}</span>}
+		<div className={cn("ds-field", className)} style={style}>
+			{label && (
+				<label className="ds-field__label" htmlFor={id}>
+					{label}
+				</label>
+			)}
+			{/* biome-ignore lint/a11y/noStaticElementInteractions: the well is not
+			    itself interactive — it only widens the hit area of the control it
+			    wraps, the way a <label> would. The control keeps every semantic
+			    and all keyboard behaviour, so there is no role to add here. */}
 			<span
 				className={cn(
 					"ds-input",
@@ -51,23 +84,35 @@ export function Input(props: InputProps) {
 					error && "ds-input--error",
 					disabled && "ds-input--disabled",
 				)}
+				onMouseDown={focusControl}
 			>
 				{prefix && <span className="ds-input__affix">{prefix}</span>}
 				{props.multiline ? (
-					<Multiline {...props} id={id} />
+					<Multiline
+						{...props}
+						aria-describedby={describedBy}
+						aria-invalid={invalid}
+						id={id}
+					/>
 				) : (
-					<SingleLine {...props} id={id} />
+					<SingleLine
+						{...props}
+						aria-describedby={describedBy}
+						aria-invalid={invalid}
+						id={id}
+					/>
 				)}
 				{suffix && <span className="ds-input__affix">{suffix}</span>}
 			</span>
-			{(error || hint) && (
+			{description && (
 				<span
 					className={cn("ds-field__hint", error && "ds-field__hint--error")}
+					id={descriptionId}
 				>
-					{error || hint}
+					{description}
 				</span>
 			)}
-		</label>
+		</div>
 	);
 }
 

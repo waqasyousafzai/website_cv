@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 import { Icon, type IconName, Sparkline } from "@/components/design";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useLiveSeries } from "./live";
@@ -15,7 +15,11 @@ const ITEMS: RailItem[] = [
 	{ to: "/replay", icon: "clapperboard", label: "Run replay" },
 ];
 
-export function Rail({ onContact }: { onContact: () => void }) {
+export function Rail({
+	onContact,
+}: {
+	onContact: MouseEventHandler<HTMLButtonElement>;
+}) {
 	return (
 		// The rail narrows by width, gap and padding only. The buttons keep
 		// `ds-iconbtn--md` at every width: that 34px sits in an unlayered design
