@@ -1,0 +1,13 @@
+/* SUBSTITUTED WEBFONTS — no source font binaries were provided.
+   Michroma, IBM Plex Mono and Space Grotesk are pulled from Google Fonts by the
+   stylesheet <link> in index.html. Replace both with local @font-face rules if
+   licensed files arrive.
+
+   These three stacks are mirrored in the `@theme` block of src/styles.css so
+   Tailwind's font-display / font-mono / font-sans utilities resolve to the same
+   faces. Change them together. */
+:root{
+  --font-display:"Michroma",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --font-sans:"Space Grotesk","Helvetica Neue",system-ui,sans-serif;
+}

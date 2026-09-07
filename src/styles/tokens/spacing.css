@@ -1,0 +1,23 @@
+:root{
+  /* 2px substrate — tech density, not a strict 8-grid */
+  --s-0:0; --s-1:2px; --s-2:4px; --s-3:6px; --s-4:8px; --s-5:12px; --s-6:16px;
+  --s-7:20px; --s-8:24px; --s-9:32px; --s-10:40px; --s-11:56px; --s-12:80px; --s-13:120px;
+
+  --gutter-panel:var(--s-8);
+  --gutter-card:var(--s-6);
+  --gutter-field:var(--s-3);
+  --stack-tight:var(--s-2);
+  --stack:var(--s-5);
+  --stack-loose:var(--s-9);
+  --inline:var(--s-4);
+
+  --rail-w:64px; --sidebar-w:264px; --inspector-w:340px;
+  --topbar-h:52px; --statusbar-h:28px;
+  --content-max:1180px; --prose-max:68ch;
+
+  /* radii — mostly square; corners get notched, not rounded */
+  --r-0:0; --r-1:2px; --r-2:3px; --r-3:6px; --r-pill:999px;
+  --notch-8:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+  --notch-14:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  --notch-tr:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+}
