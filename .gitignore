@@ -12,3 +12,6 @@ dist-ssr
 __unconfig*
 todos.json
 PR-*-review.md
+
+# Private CV source documents
+/docs/private/
