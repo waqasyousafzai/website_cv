@@ -1,15 +1,16 @@
-# Task Implementation       
+# Task Implementation
 
 ## 1. Invocation Example
 
 ```markdown
-@task-implementation.md execute on @task-file.md /grill-with-docs
-/implement
+@task-implementation.md execute on @task-file.md
 ```
+
+Optional commands: `/grill-with-docs` and `/implement`.
 
 ## 2. Project Lifecycle Tracking — After Task Completion
 
-Begin this section only after the grill-with-docs and implement state have been completed.
+Begin this section after the task is complete, including any optionally invoked `/grill-with-docs` and `/implement` workflows.
 
 1. Identify the project associated with the task and locate the task's own entry in the relevant project folder, whether it is documented in a task file or a subprocess file.
 2. Present the identified project to the user and wait for confirmation before updating project lifecycle documentation.
@@ -25,3 +26,5 @@ Begin this section only after the grill-with-docs and implement state have been 
    ```bash
    gh pr review <PR_NUMBER> --comment -b "..."
    ```
+
+4. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`. Suggest deleting the merged local and remote branches, and ask the user whether to delete them. If deletion is already authorized, proceed without asking again.
