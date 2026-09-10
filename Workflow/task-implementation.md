@@ -52,11 +52,10 @@ Optional commands: `/grill-with-docs` and `/implement`.
    - **Diff Analysis**
    - **Review Assessment**
 
-4. Report the pull request URL to the user, then end the conversation with the `EndConversation` tool. Do not wait for, poll for, or ask about review feedback on the open pull request. Waiting on a human review leaves the session idle and consumes tokens without making progress.
+4. Report the pull request URL to the user. State that it is awaiting their manual review and merge, and that Merge Cleanup can commence after manual approval.
+5. End the conversation with the `EndConversation` tool. Do not wait for, poll for, or ask about review feedback on the open pull request. Waiting on a human review leaves the session idle and consumes tokens without making progress.
 
-## 5. Merge and Cleanup
+## 5. Merge Cleanup
 
-1. Ask the user if the branch's commits should be squashed before merging.
-2. Present the review summary to the user in a Markdown file in the IDE and obtain explicit sign-off before executing the merge. Delete the Markdown file after the merge.
-3. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`.
-4. Suggest to the user if the merged local and remote branches should be deleted.
+1. Ask whether local `main` should be caught up to `origin/main`. If yes, fetch `origin`, switch to local `main`, and fast-forward it to `origin/main`.
+2. Ask whether any remaining local and remote branches other than `main` should be deleted. If yes, delete the ones the user names.
