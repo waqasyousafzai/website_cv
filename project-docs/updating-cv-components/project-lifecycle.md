@@ -4,7 +4,7 @@ Purpose: Guide the replacement of the website's placeholder CV content with the 
 
 [x] 1. Review Existing CV Content — Subprocess
 [x] 2. Gather and Structure Actual CV Information — Subprocess
-[ ] 3. Update Central CV Data — Task
+[x] 3. Update Central CV Data — Task
 [ ] 4. Update Related Components and Text — Task
 [ ] 5. Validate Content and Type Safety — Subprocess
 [ ] 6. Verify the Website Visually — Subprocess
