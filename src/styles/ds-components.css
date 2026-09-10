@@ -75,7 +75,7 @@
 .ds-card__body{padding:var(--gutter-card)}
 
 /* ── Badge / Tag ────────────────────────────────────────── */
-.ds-badge{display:inline-flex;align-items:center;gap:var(--s-2);height:20px;padding:0 var(--s-4);border:1px solid;border-radius:var(--r-1);font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase}
+.ds-badge{display:inline-flex;align-items:center;gap:var(--s-2);min-height:20px;padding:0 var(--s-4);border:1px solid;border-radius:var(--r-1);font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase}
 .ds-badge__dot{width:5px;height:5px;border-radius:var(--r-pill);background:currentColor}
 .ds-badge--idle{color:var(--signal-idle);border-color:var(--border-line);background:var(--surface-raised)}
 .ds-badge--running{color:var(--signal-running);border-color:var(--cyan-700);background:rgba(53,214,255,.08)}
@@ -144,10 +144,10 @@
 .ds-graph__edge--live{stroke:var(--signal-primary);stroke-dasharray:4 8;animation:ds-flow var(--dur-flow) var(--ease-linear) infinite;filter:drop-shadow(0 0 4px rgba(124,255,61,.6))}
 .ds-runbar{display:flex;align-items:center;flex-wrap:nowrap;gap:var(--s-5);height:var(--statusbar-h);padding:0 var(--s-6);background:var(--void-1);border-top:1px solid var(--border-hair);font:var(--type-data);color:var(--text-dim);white-space:nowrap;overflow:hidden}
 .ds-runbar>*{flex:none;min-width:0}
-.ds-runbar__stage{flex:0 1 auto;min-width:12ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-runbar__stage{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ds-runbar .ds-badge{flex:none}
 .ds-runbar__meter{flex:1 1 40px;min-width:40px;height:4px;background:var(--surface-input);overflow:hidden}
-.ds-runbar__fill{height:100%;background:var(--signal-primary);box-shadow:0 0 10px rgba(124,255,61,.6);transition:width var(--dur-base) var(--ease-out)}
+.ds-runbar__fill{display:block;height:100%;background:var(--signal-primary);box-shadow:0 0 10px rgba(124,255,61,.6);transition:width var(--dur-base) var(--ease-out)}
 
 .ds-callout{position:absolute;width:300px;display:flex;flex-direction:column;background:var(--surface-raised);border:1px solid var(--border-signal);box-shadow:var(--shadow-pop),var(--glow-primary);clip-path:var(--notch-14);animation:ds-callout-in var(--dur-base) var(--ease-out);z-index:4}
 .ds-callout__stub{position:absolute;background:var(--signal-primary);box-shadow:0 0 8px rgba(124,255,61,.6)}

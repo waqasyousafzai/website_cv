@@ -21,26 +21,33 @@ export function SchemaTable({
 	...rest
 }: SchemaTableProps) {
 	return (
-		<table className={cn("ds-schema", className)} {...rest}>
-			<thead>
-				<tr>
-					<th>column</th>
-					<th>type</th>
-					<th>note</th>
-				</tr>
-			</thead>
-			<tbody>
-				{columns.map((c) => (
-					<tr key={c.name}>
-						<td>
-							{c.key ? <span className="ds-schema__key">▸ </span> : null}
-							{c.name}
-						</td>
-						<td className="ds-schema__type">{c.type}</td>
-						<td className="text-dim">{c.note}</td>
+		<section
+			aria-label="Schema columns"
+			className="max-w-full overflow-x-auto"
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: The overflow region needs keyboard focus so arrow keys can reveal every column.
+			tabIndex={0}
+		>
+			<table className={cn("ds-schema", className)} {...rest}>
+				<thead>
+					<tr>
+						<th>column</th>
+						<th>type</th>
+						<th>note</th>
 					</tr>
-				))}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{columns.map((c) => (
+						<tr key={c.name}>
+							<td>
+								{c.key ? <span className="ds-schema__key">▸ </span> : null}
+								{c.name}
+							</td>
+							<td className="ds-schema__type">{c.type}</td>
+							<td className="text-dim">{c.note}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</section>
 	);
 }
