@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
-	CountStat,
+	CvStats,
 	RUN_LOG,
 	RUNS,
 	type RunRecord,
@@ -137,19 +137,10 @@ export function ReplayScreen() {
 								</div>
 							</Card>
 						</div>
-						{/* Size columns to the space left beside history, keeping the
-						    longest value (99.98%) readable even at the split breakpoint. */}
-						<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,160px),1fr))] gap-s-5">
-							<CountStat
-								delta="+18% qoq"
-								label="Rows / day"
-								unit="B"
-								value="1.2"
-							/>
-							<CountStat label="On-time delivery" unit="%" value="99.98" />
-							<CountStat label="Pipelines owned" value="41" />
-							<CountStat label="Years" value="6" />
-						</div>
+						{/* The CV's own figures, sized to the space left beside history.
+						    They used to be four hand-written cards that the CV does not
+						    support. */}
+						<CvStats />
 					</div>
 					<div className="flex min-w-0 flex-col gap-s-6">
 						<SectionHeader

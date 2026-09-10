@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
+import { count } from "@/lib/utils";
 import { CV_FILENAME, downloadCvText } from "./cv-text";
 import {
 	CV,
@@ -188,7 +189,7 @@ export function PipelineScreen() {
 			push({
 				status: "ok",
 				title: "Run complete",
-				message: "7 stages · 00:11.6 elapsed",
+				message: `${count(RUN_ORDER.length, "stage")} · 00:11.6 elapsed`,
 			});
 			return;
 		}
@@ -336,7 +337,12 @@ export function PipelineScreen() {
 											key={k}
 										>
 											<span className="w-[88px] flex-none text-dim">{k}</span>
-											<span className="min-w-0 text-ink-1">{v}</span>
+											{/* An address, a URL or a category's tool list outruns
+											    the value column, so it wraps rather than being cut
+											    off by the callout's hidden horizontal overflow. */}
+											<span className="min-w-0 text-ink-1 wrap-anywhere">
+												{v}
+											</span>
 										</div>
 									))}
 								</div>

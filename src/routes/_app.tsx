@@ -4,6 +4,7 @@ import { Badge, Icon } from "@/components/design";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CV } from "@/features/cv/data";
 import { PANES } from "@/features/cv/Panes";
 import { Rail, TopBar } from "@/features/cv/Shell";
 import { ToastProvider, useToast } from "@/features/cv/toast-context";
@@ -31,7 +32,13 @@ function AppLayout() {
 						<TopBar
 							right={
 								<>
-									<Badge status="ok">available</Badge>
+									{/* The status is a sentence, not a word, and the topbar's
+									    right-hand group cannot wrap inside itself. It steps
+									    aside on a phone, where the profile pane and the footer
+									    ticker still carry it. */}
+									<span className="hidden row:contents">
+										<Badge status="ok">{CV.status}</Badge>
+									</span>
 									<Button
 										leading={<Icon name="mail" size={12} />}
 										onClick={open}

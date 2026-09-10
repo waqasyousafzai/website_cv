@@ -12,8 +12,9 @@ import {
 	TimelineEntry,
 } from "@/components/design";
 import { Button } from "@/components/ui/button";
-import { CV, type PaneId } from "./data";
-import { CountStat, useLiveSeries } from "./live";
+import { count } from "@/lib/utils";
+import { CV, type PaneId, SKILL_GROUPS, type SkillGroup } from "./data";
+import { CvStats, useLiveSeries } from "./live";
 
 const WRAP = "flex flex-col gap-s-7";
 
@@ -28,11 +29,7 @@ function Overview() {
 		<div className={WRAP}>
 			<SectionHeader index="FCT" note="one big row" title="Overview" />
 			<p className="m-0 font-body text-muted">{CV.summary}</p>
-			<div className="grid grid-cols-2 gap-s-5">
-				{CV.stats.map((s) => (
-					<CountStat key={s.label} {...s} />
-				))}
-			</div>
+			<CvStats />
 			<Card title="rows / minute · live">
 				<Sparkline fill height={56} values={series} />
 			</Card>
@@ -55,9 +52,7 @@ function Profile() {
 			</div>
 			<p className="m-0 font-body text-muted">{CV.summary}</p>
 			<div className="flex flex-wrap gap-s-4">
-				<Badge status="ok">available</Badge>
-				<Badge status="idle">notice: 30d</Badge>
-				<Badge status="idle">remote-first</Badge>
+				<Badge status="ok">{CV.status}</Badge>
 			</div>
 		</div>
 	);
@@ -68,7 +63,7 @@ function Experience() {
 		<div className={WRAP}>
 			<SectionHeader
 				index="02"
-				note={`${CV.experience.length} records`}
+				note={count(CV.experience.length, "record")}
 				title="Experience"
 			/>
 			<div>
@@ -89,13 +84,49 @@ function Experience() {
 	);
 }
 
+/**
+ * One of the CV's skill categories. The CV states no 1-5 ratings, so an unscored
+ * skill is a plain chip rather than a meter drawn at zero; a skill that does
+ * carry a rating still gets its meter.
+ */
+function SkillGroupSection({ group }: { group: SkillGroup }) {
+	const unscored = group.skills.filter((s) => s.value === undefined);
+	const scored = group.skills.filter((s) => s.value !== undefined);
+	return (
+		<div className="flex min-w-0 flex-col gap-s-5">
+			<div className="font-data text-dim uppercase tracking-label">
+				{group.category}
+			</div>
+			{unscored.length > 0 && (
+				<div className="flex flex-wrap gap-s-3">
+					{unscored.map((s) => (
+						<Tag key={s.label}>{s.label}</Tag>
+					))}
+				</div>
+			)}
+			{scored.map((s) => (
+				<SkillMeter
+					key={s.label}
+					label={s.label}
+					level={s.level}
+					value={s.value}
+				/>
+			))}
+		</div>
+	);
+}
+
 function Skills() {
 	return (
 		<div className={WRAP}>
-			<SectionHeader index="03" note="ticks are honest" title="Skills" />
-			<div className="flex min-w-0 flex-col gap-s-6">
-				{CV.skills.map((s) => (
-					<SkillMeter key={s.label} {...s} />
+			<SectionHeader
+				index="03"
+				note={count(CV.skills.length, "skill")}
+				title="Skills"
+			/>
+			<div className="flex min-w-0 flex-col gap-s-7">
+				{SKILL_GROUPS.map((g) => (
+					<SkillGroupSection group={g} key={g.category} />
 				))}
 			</div>
 		</div>
@@ -105,7 +136,11 @@ function Skills() {
 function Projects() {
 	return (
 		<div className={WRAP}>
-			<SectionHeader index="04" note="3 records" title="Projects" />
+			<SectionHeader
+				index="04"
+				note={count(CV.projects.length, "record")}
+				title="Projects"
+			/>
 			{CV.projects.map((p) => (
 				<Card key={p.name} notched title={`${p.name} / ${p.kind}`}>
 					<p className="m-0 font-body text-muted">{p.body}</p>
@@ -123,7 +158,11 @@ function Projects() {
 function Education() {
 	return (
 		<div className={WRAP}>
-			<SectionHeader index="05" note="2 records" title="Education" />
+			<SectionHeader
+				index="05"
+				note={count(CV.education.length, "record")}
+				title="Education"
+			/>
 			<div>
 				{CV.education.map((e, i) => (
 					<TimelineEntry

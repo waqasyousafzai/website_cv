@@ -2,10 +2,15 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon, type LogLine, LogStream } from "@/components/design";
 import { Button } from "@/components/ui/button";
+import { count } from "@/lib/utils";
+import { CV, EDGES, NAME_PARTS, NODES } from "./data";
 
 const BOOT: ReadonlyArray<[LogLine["level"], string]> = [
 	["info", "waqas-cv v2.4 — pipeline runtime"],
-	["info", "loading dag: 7 stages, 7 edges"],
+	[
+		"info",
+		`loading dag: ${count(NODES.length, "stage")}, ${count(EDGES.length, "edge")}`,
+	],
 	["info", "warehouse: analytics_wh (XS)"],
 	["ok", "dag compiled · press enter to initialise"],
 ];
@@ -54,12 +59,18 @@ export function BootScreen() {
 				style={{ clipPath: "var(--notch-14)" }}
 			>
 				<div className="font-display text-h3 text-ink-0 leading-[1.05] tracking-display row:text-h2">
-					WAQAS
-					<br />
-					YOUSAFZAI<span className="text-lime-500">.</span>
+					{/* One line per part of the name, so the lockup follows the profile
+					    rather than repeating it. */}
+					{NAME_PARTS.map((part, i) => (
+						<span key={part}>
+							{part.toUpperCase()}
+							{i < NAME_PARTS.length - 1 && <br />}
+						</span>
+					))}
+					<span className="text-lime-500">.</span>
 				</div>
 				<div className="mt-s-5 font-data text-dim uppercase tracking-tag">
-					data engineer / pipeline cv v2.4
+					{CV.role} / pipeline cv v2.4
 				</div>
 				<div className="mt-s-9">
 					<LogStream height={104} lines={lines} />
