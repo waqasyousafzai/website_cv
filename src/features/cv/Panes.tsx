@@ -152,13 +152,17 @@ function Contact({ onSend }: PaneProps) {
 						className="flex items-center gap-s-5 border border-hair bg-card px-s-5 py-s-4"
 						key={c.k}
 					>
-						<span className="text-dim">
+						<span className="flex-none text-dim">
 							<Icon name={c.icon} size={14} />
 						</span>
-						<span className="w-[64px] font-data text-dim uppercase tracking-label">
+						<span className="w-[64px] flex-none font-data text-dim uppercase tracking-label">
 							{c.k}
 						</span>
-						<span className="font-body-mono text-ink-1">{c.v}</span>
+						{/* A real address or profile URL outruns the 340px inspector, so the
+						    value wraps mid-token rather than pushing the pane sideways. */}
+						<span className="min-w-0 font-body-mono text-ink-1 wrap-anywhere">
+							{c.v}
+						</span>
 					</div>
 				))}
 			</div>

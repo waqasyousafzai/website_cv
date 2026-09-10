@@ -34,8 +34,11 @@ export function buildCvText(): string {
 
 	out.push("", ...heading("Skills"), "");
 	for (const s of CV.skills) {
-		// The meter's 1–5 rating, written out rather than drawn.
-		out.push(bullet(`${s.label}: ${s.value}/5 · ${s.level}`));
+		// The meter's 1–5 rating, written out rather than drawn. An unscored skill
+		// prints as its name alone rather than as a rating of nothing.
+		const rating = s.value === undefined ? "" : `: ${s.value}/5`;
+		const level = s.level ? ` · ${s.level}` : "";
+		out.push(bullet(`${s.label}${rating}${level}`));
 	}
 
 	out.push("", ...heading("Projects"));
