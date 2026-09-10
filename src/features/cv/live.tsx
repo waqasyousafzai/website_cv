@@ -5,9 +5,11 @@ import {
 	StatReadout,
 	type Status,
 } from "@/components/design";
+import { CV } from "./data";
 
-// Live-data helpers for the kit: a ticking series, a count-up numeral, run history.
-// The "live" values are simulated locally — there is no server to query.
+// Live-data helpers for the kit: a ticking series, a count-up numeral, the CV's
+// statistics as count-up cards, run history and the footer ticker. The "live"
+// values are simulated locally — there is no server to query.
 
 /** A rolling window of throughput samples, one new reading every `every` ms. */
 export function useLiveSeries(len = 40, every = 900) {
@@ -95,6 +97,21 @@ export function CountStat({ label, value, unit, delta, down }: CountStatProps) {
 	);
 }
 
+/**
+ * The CV's own figures, laid out to the width they are given: one column in the
+ * 340px inspector, a row across the replay page. Both surfaces show the same two
+ * statistics, so neither writes them out again.
+ */
+export function CvStats() {
+	return (
+		<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,160px),1fr))] gap-s-5">
+			{CV.stats.map((s) => (
+				<CountStat key={s.label} {...s} />
+			))}
+		</div>
+	);
+}
+
 export interface RunRecord {
 	id: string;
 	when: string;
@@ -119,7 +136,7 @@ export const RUNS: RunRecord[] = [
 		state: "warn",
 		elapsed: "00:14.2",
 		stages: "7 / 7",
-		note: "1 cert expiry warning",
+		note: "stg_projects: retried once",
 	},
 	{
 		id: "4191",
@@ -149,7 +166,7 @@ export const RUN_LOG: Record<string, ReadonlyArray<[Level, string]>> = {
 	],
 	"4192": [
 		["info", "dag run started · full refresh"],
-		["warn", "stg_education: 1 cert expires 2027"],
+		["warn", "stg_projects: retried after timeout"],
 		["ok", "run complete · 7 stages · 00:14.2"],
 	],
 	"4191": [
@@ -163,13 +180,17 @@ export const RUN_LOG: Record<string, ReadonlyArray<[Level, string]>> = {
 	],
 };
 
+/**
+ * The strip along the foot of the console. The first entries are the CV's own
+ * figures and record counts; `avg run` and `warehouse` describe the simulated
+ * runtime, which is the only thing here that is not read from the CV.
+ */
 export const TICKER: MetricTickerItem[] = [
-	{ label: "rows / day", value: "1.2 B", status: "ok" },
-	{ label: "on-time delivery", value: "99.98 %" },
-	{ label: "pipelines owned", value: "41" },
+	...CV.stats.map((s) => ({ label: s.label, value: s.value })),
+	{ label: "roles", value: String(CV.experience.length) },
+	{ label: "skills listed", value: String(CV.skills.length) },
+	{ label: "based", value: CV.loc },
 	{ label: "avg run", value: "11.6 s" },
-	{ label: "stale models", value: "1", status: "warn" },
 	{ label: "warehouse", value: "analytics_wh · XS" },
-	{ label: "notice period", value: "30 d" },
-	{ label: "status", value: "accepting offers", status: "ok" },
+	{ label: "status", value: CV.status, status: "ok" },
 ];

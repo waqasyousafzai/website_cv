@@ -4,7 +4,8 @@ A personal CV rendered as a data pipeline. You boot the runtime, run a seven-sta
 DAG, and each stage that completes reveals the CV section it produces: identity,
 roles, tools, projects, education, and a contact endpoint.
 
-Everything is fake but clickable. There is no backend.
+The CV content is real. The pipeline around it — the run, the throughput, the
+archived runs — is a simulation, and there is no backend.
 
 ```bash
 npm install
@@ -73,7 +74,15 @@ in `src/features/cv/data.ts` and `live.tsx`; the "live" throughput series is a
 `setInterval` over `Math.random()`. That is why TanStack Query is not installed —
 add it, with a provider, when a real endpoint appears.
 
-Replacing the placeholder CV means editing `data.ts` and nothing else.
+`CV` in `data.ts` is the CV. The stage callouts, log lines, row counts, footer
+ticker, section counts, name lockups and download all read from it, so editing
+that record updates them too. Three things are written outside it:
+
+- `index.html` — the page title and description.
+- `live.tsx`: `RUNS` and `RUN_LOG` — the simulated run history, which describes
+  the fake pipeline rather than the CV.
+- The stage names, warehouse and timings in `data.ts`, `BootScreen.tsx` and
+  `PipelineScreen.tsx` — the console metaphor, not CV claims.
 
 ## Commands
 

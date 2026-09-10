@@ -1,10 +1,11 @@
 import type { IconName, Level, SchemaColumn } from "@/components/design";
+import { count } from "@/lib/utils";
 
 /**
  * `CV` is the owner's actual CV content and the single source for the inspector
- * panes and the text download. The stage records further down (`OUTPUT`,
- * `LOG_FOR`, `ROWS`) still carry demo narration and are not derived from it yet.
- * Nothing here is fetched, which is why the app carries no query client.
+ * panes, the text download and the stage records further down (`OUTPUT`,
+ * `LOG_FOR`, `ROWS`), which read from it rather than narrating beside it. Nothing
+ * here is fetched, which is why the app carries no query client.
  */
 
 export interface CvStat {
@@ -24,6 +25,8 @@ export interface CvRole {
 
 export interface CvSkill {
 	label: string;
+	/** The CV's own grouping, e.g. "Cloud". Also orders the rendered groups. */
+	category: string;
 	/** Filled ticks on the meter, 1–5. Absent when the CV states no rating. */
 	value?: number;
 	/** Word for that rating, e.g. "daily driver". Absent alongside `value`. */
@@ -52,6 +55,9 @@ export interface Cv {
 	role: string;
 	loc: string;
 	summary: string;
+	/** What the owner is looking for, in one line. Every badge, log and ticker
+	 *  entry that says it reads this, so they cannot disagree. */
+	status: string;
 	stats: CvStat[];
 	experience: CvRole[];
 	skills: CvSkill[];
@@ -68,6 +74,9 @@ export const CV: Cv = {
 	loc: "Sydney, New South Wales",
 	summary:
 		"AWS Data Engineer with experience at a major UK bank, engineering production ETL pipelines that turn raw data into high-quality inputs for retail pricing decisions. Recently relocated to Sydney after travelling and seeking a new professional challenge.",
+	// The CV states no availability date, notice period or work arrangement. A
+	// new challenge is the one preference it does state, in the summary above.
+	status: "seeking a new challenge",
 	// Both counts are scoped to the Aug 2024 — Jan 2026 role rather than being a
 	// current inventory. The monetary figures stay qualified in the prose below.
 	stats: [
@@ -129,36 +138,36 @@ export const CV: Cv = {
 			],
 		},
 	],
-	// Listed in the CV's own order: cloud, devops, languages, visualization, soft
-	// skills. It states no 1-5 ratings, so `value` and `level` are left absent
-	// rather than scored from employment history.
+	// Listed in the CV's own order and grouping: cloud, devops, languages, data
+	// visualization, soft skills. It states no 1-5 ratings, so `value` and `level`
+	// are left absent rather than scored from employment history.
 	skills: [
-		{ label: "AWS" },
-		{ label: "Amazon EMR" },
-		{ label: "Amazon EC2" },
-		{ label: "AWS Glue" },
-		{ label: "AWS Lambda" },
-		{ label: "Apache Airflow (Amazon MWAA)" },
-		{ label: "Amazon S3" },
-		{ label: "Snowflake" },
-		{ label: "GitLab" },
-		{ label: "Version control" },
-		{ label: "Branching" },
-		{ label: "Pull requests" },
-		{ label: "CI/CD pipelines" },
-		{ label: "Agile" },
-		{ label: "Python" },
-		{ label: "SQL" },
-		{ label: "PySpark" },
-		{ label: "Scala" },
-		{ label: "C++" },
-		{ label: "VBA" },
-		{ label: "Tableau" },
-		{ label: "Matplotlib" },
-		{ label: "Senior stakeholder management" },
-		{ label: "Cross-functional collaboration" },
-		{ label: "Data storytelling" },
-		{ label: "Ownership mentality" },
+		{ label: "AWS", category: "Cloud" },
+		{ label: "Amazon EMR", category: "Cloud" },
+		{ label: "Amazon EC2", category: "Cloud" },
+		{ label: "AWS Glue", category: "Cloud" },
+		{ label: "AWS Lambda", category: "Cloud" },
+		{ label: "Apache Airflow (Amazon MWAA)", category: "Cloud" },
+		{ label: "Amazon S3", category: "Cloud" },
+		{ label: "Snowflake", category: "Cloud" },
+		{ label: "GitLab", category: "DevOps" },
+		{ label: "Version control", category: "DevOps" },
+		{ label: "Branching", category: "DevOps" },
+		{ label: "Pull requests", category: "DevOps" },
+		{ label: "CI/CD pipelines", category: "DevOps" },
+		{ label: "Agile", category: "DevOps" },
+		{ label: "Python", category: "Languages" },
+		{ label: "SQL", category: "Languages" },
+		{ label: "PySpark", category: "Languages" },
+		{ label: "Scala", category: "Languages" },
+		{ label: "C++", category: "Languages" },
+		{ label: "VBA", category: "Languages" },
+		{ label: "Tableau", category: "Data visualization" },
+		{ label: "Matplotlib", category: "Data visualization" },
+		{ label: "Senior stakeholder management", category: "Soft skills" },
+		{ label: "Cross-functional collaboration", category: "Soft skills" },
+		{ label: "Data storytelling", category: "Soft skills" },
+		{ label: "Ownership mentality", category: "Soft skills" },
 	],
 	// The CV names no separate projects; these group the work already described
 	// in `experience`, so their outcomes are the same evidence, not extra wins.
@@ -227,9 +236,40 @@ export const CV: Cv = {
 		{ name: "started_at", type: "date", note: "utc" },
 		{ name: "ended_at", type: "date", note: "null = current" },
 		{ name: "stack", type: "array<varchar>" },
-		{ name: "impact_pct", type: "number(5,2)", note: "verified" },
+		{ name: "impact_pct", type: "number(5,2)", note: "illustrative" },
 	],
 };
+
+export interface SkillGroup {
+	category: string;
+	skills: CvSkill[];
+}
+
+/**
+ * `CV.skills` folded into the CV's own categories, ordered by first appearance.
+ * The skills pane, the stage callout and the download all render from this, so
+ * the grouping is stated once.
+ */
+export const SKILL_GROUPS: SkillGroup[] = CV.skills.reduce<SkillGroup[]>(
+	(groups, skill) => {
+		const group = groups.find((g) => g.category === skill.category);
+		if (group) group.skills.push(skill);
+		else groups.push({ category: skill.category, skills: [skill] });
+		return groups;
+	},
+	[],
+);
+
+/**
+ * The name as the display lockups take it: the boot panel stacks the parts, the
+ * topbar joins them with the lime full stop, the rail shows the initials and the
+ * download names the file. All of them read the profile rather than repeat it.
+ */
+export const NAME_PARTS = CV.name.split(" ");
+
+export const INITIALS = NAME_PARTS.map((part) => part[0])
+	.join("")
+	.toUpperCase();
 
 export type PaneId =
 	| "overview"
@@ -338,27 +378,34 @@ export const RUN_ORDER: readonly NodeId[] = [
 	"serve_contact",
 ];
 
+/** A URL as a callout column reads it: no scheme, no `www.`, no trailing slash. */
+const short = (value: string) =>
+	value.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+
 /** Per-stage log lines: the first is emitted on entry, the last on completion. */
 export const LOG_FOR: Record<NodeId, ReadonlyArray<[Level, string]>> = {
 	src_profile: [
 		["info", "reading identity from src_profile"],
-		["ok", "1 row · waqas yousafzai / data engineer"],
+		["ok", `1 row · ${CV.name.toLowerCase()} / ${CV.role.toLowerCase()}`],
 	],
 	src_experience: [
 		["info", "scanning src_experience"],
-		["ok", "3 roles · 6.2 years total tenure"],
+		["ok", `${count(CV.experience.length, "role")} · newest first`],
 	],
 	src_skills: [
 		["info", "scanning src_skills"],
-		["ok", "24 tools · 8 at production depth"],
+		[
+			"ok",
+			`${count(CV.skills.length, "skill")} · ${count(SKILL_GROUPS.length, "category", "categories")}`,
+		],
 	],
 	stg_projects: [
 		["info", "stg_projects: normalizing project records"],
-		["ok", "3 projects materialized"],
+		["ok", `${count(CV.projects.length, "project")} materialized`],
 	],
 	stg_education: [
-		["info", "stg_education: joining certifications"],
-		["warn", "1 cert expires 2027 — refresh reminder set"],
+		["info", "stg_education: reading qualifications"],
+		["ok", `${count(CV.education.length, "record")} materialized`],
 	],
 	fct_cv: [
 		["info", "fct_cv: building one big row"],
@@ -366,11 +413,15 @@ export const LOG_FOR: Record<NodeId, ReadonlyArray<[Level, string]>> = {
 	],
 	serve_contact: [
 		["info", "serve_contact: opening endpoint"],
-		["ok", "ready · accepting offers"],
+		["ok", `ready · ${CV.status}`],
 	],
 };
 
-/** What each stage shows in its in-canvas callout. */
+/**
+ * What each stage shows in its in-canvas callout. Every line is read from `CV`,
+ * so a callout cannot outlive an edit to the record it describes. Labels are the
+ * narrow column, which is why the long strings sit on the right of each pair.
+ */
 export const OUTPUT: Record<
 	NodeId,
 	{ head: string; lines: ReadonlyArray<[string, string]> }
@@ -378,71 +429,66 @@ export const OUTPUT: Record<
 	src_profile: {
 		head: "identity record",
 		lines: [
-			["name", "Waqas Yousafzai"],
-			["role", "Data Engineer"],
-			["based", "Sydney, Australia"],
-			["status", "available · 30d notice"],
+			["name", CV.name],
+			["role", CV.role],
+			["based", CV.loc],
+			["status", CV.status],
 		],
 	},
 	src_experience: {
-		head: "3 roles · 6.2 years",
-		lines: [
-			["2022 —", "Senior Data Engineer · Acme Data Platform"],
-			["2020 — 2022", "Data Engineer · Northwind Logistics"],
-			["2019 — 2020", "Analytics Engineer · Vertex Retail"],
-		],
+		head: count(CV.experience.length, "role"),
+		lines: CV.experience.map((e): [string, string] => [
+			e.when,
+			`${e.role} · ${e.org}`,
+		]),
 	},
 	src_skills: {
-		head: "24 tools · 8 at production depth",
-		lines: [
-			["daily driver", "Airflow, dbt, Snowflake, Python"],
-			["production", "Kafka, Spark, Terraform"],
-			["working", "Kubernetes, Flink"],
-		],
+		head: `${count(CV.skills.length, "skill")} · ${count(SKILL_GROUPS.length, "category", "categories")}`,
+		lines: SKILL_GROUPS.map((g): [string, string] => [
+			g.category.toLowerCase(),
+			g.skills.map((skill) => skill.label).join(", "),
+		]),
 	},
 	stg_projects: {
-		head: "3 projects materialized",
-		lines: [
-			["topic_to_table", "kafka → warehouse loader, 1.2B rows/day"],
-			["dq_contracts", "source contract tests from dbt schemas"],
-			["cost_lens", "spend attribution; cut 38% of nightly compute"],
-		],
+		head: `${count(CV.projects.length, "project")} materialized`,
+		// Numbered, because a project name is far too long for the label column.
+		lines: CV.projects.map((p, i): [string, string] => [
+			String(i + 1).padStart(2, "0"),
+			p.name,
+		]),
 	},
 	stg_education: {
-		head: "2 records · 1 warn",
-		lines: [
-			["2015 — 2019", "BSc Computer Science · NUST"],
-			["2023", "SnowPro Advanced: Data Engineer"],
-			["warn", "1 cert expires 2027"],
-		],
+		head: count(CV.education.length, "record"),
+		lines: CV.education.map((e): [string, string] => [
+			e.when,
+			`${e.role} · ${e.org}`,
+		]),
 	},
 	fct_cv: {
 		head: "one big row",
+		// What the row actually holds. The CV's own figures are the two stats in
+		// the overview pane, not a count of records.
 		lines: [
-			["rows / day", "1.2B"],
-			["on-time delivery", "99.98%"],
-			["pipelines owned", "41"],
-			["years", "6"],
+			["roles", String(CV.experience.length)],
+			["skills", String(CV.skills.length)],
+			["projects", String(CV.projects.length)],
+			["education", String(CV.education.length)],
+			["contact", String(CV.contact.length)],
 		],
 	},
 	serve_contact: {
-		head: "200 OK · accepting offers",
-		lines: [
-			["email", "waqas@example.com"],
-			["github", "github.com/waqas"],
-			["linkedin", "in/waqas-yousafzai"],
-			["phone", "+92 300 000 0000"],
-		],
+		head: "200 OK · endpoint open",
+		lines: CV.contact.map((c): [string, string] => [c.k, short(c.v)]),
 	},
 };
 
 /** Row counts a stage reports once it has been built. */
 export const ROWS: Record<NodeId, string> = {
 	src_profile: "1 row",
-	src_experience: "3 rows",
-	src_skills: "24 rows",
-	stg_projects: "3 rows",
-	stg_education: "2 rows",
+	src_experience: count(CV.experience.length, "row"),
+	src_skills: count(CV.skills.length, "row"),
+	stg_projects: count(CV.projects.length, "row"),
+	stg_education: count(CV.education.length, "row"),
 	fct_cv: "1 row",
 	serve_contact: "200 OK",
 };

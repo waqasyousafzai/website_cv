@@ -1,4 +1,4 @@
-import { CV } from "./data";
+import { CV, NAME_PARTS, SKILL_GROUPS } from "./data";
 
 /**
  * The CV as a downloadable plain-text file. Everything is read from `CV`, so the
@@ -6,7 +6,7 @@ import { CV } from "./data";
  * of the content to keep in sync.
  */
 
-export const CV_FILENAME = "Waqas-Yousafzai-CV.txt";
+export const CV_FILENAME = `${NAME_PARTS.join("-")}-CV.txt`;
 
 const RULE = "=".repeat(64);
 
@@ -18,7 +18,7 @@ const bullet = (body: string) => `  ${body}`;
 export function buildCvText(): string {
 	const out: string[] = [];
 
-	out.push(CV.name, `${CV.role} · ${CV.loc}`, "", CV.summary);
+	out.push(CV.name, `${CV.role} · ${CV.loc} · ${CV.status}`, "", CV.summary);
 
 	out.push("", ...heading("Numbers"), "");
 	for (const s of CV.stats) {
@@ -32,13 +32,16 @@ export function buildCvText(): string {
 		if (e.tags?.length) out.push(bullet(`stack: ${e.tags.join(", ")}`));
 	}
 
-	out.push("", ...heading("Skills"), "");
-	for (const s of CV.skills) {
-		// The meter's 1–5 rating, written out rather than drawn. An unscored skill
-		// prints as its name alone rather than as a rating of nothing.
-		const rating = s.value === undefined ? "" : `: ${s.value}/5`;
-		const level = s.level ? ` · ${s.level}` : "";
-		out.push(bullet(`${s.label}${rating}${level}`));
+	out.push("", ...heading("Skills"));
+	for (const g of SKILL_GROUPS) {
+		out.push("", g.category);
+		for (const s of g.skills) {
+			// The meter's 1–5 rating, written out rather than drawn. An unscored skill
+			// prints as its name alone rather than as a rating of nothing.
+			const rating = s.value === undefined ? "" : `: ${s.value}/5`;
+			const level = s.level ? ` · ${s.level}` : "";
+			out.push(bullet(`${s.label}${rating}${level}`));
+		}
 	}
 
 	out.push("", ...heading("Projects"));
@@ -63,8 +66,8 @@ export function buildCvText(): string {
 }
 
 /**
- * Writes the CV to the user's downloads as `Waqas-Yousafzai-CV.txt`. Returns the
- * byte size so the caller can report what actually landed rather than guess.
+ * Writes the CV to the user's downloads under `CV_FILENAME`. Returns the byte
+ * size so the caller can report what actually landed rather than guess.
  */
 export function downloadCvText(): number {
 	const blob = new Blob([buildCvText()], {
