@@ -6,7 +6,7 @@ import { count } from "@/lib/utils";
 import { CV, EDGES, NAME_PARTS, NODES } from "./data";
 
 const BOOT: ReadonlyArray<[LogLine["level"], string]> = [
-	["info", "waqas-cv v2.4 — pipeline runtime"],
+	["info", `${NAME_PARTS[0].toLowerCase()}-cv v2.4 — pipeline runtime`],
 	[
 		"info",
 		`loading dag: ${count(NODES.length, "stage")}, ${count(EDGES.length, "edge")}`,
