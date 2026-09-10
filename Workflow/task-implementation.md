@@ -38,7 +38,7 @@ Optional commands: `/grill-with-docs` and `/implement`.
 ## 4. Remote Branch and Pull Request
 
 1. Push the local branch to the remote repository.
-2. Open a pull request targeting `main`.
+2. Open a pull request targeting `main`, describing the change plainly in the body.
 3. Submit a formal review directly through GitHub's pull request review system, for example:
 
    ```bash
