@@ -182,7 +182,7 @@ export const RUN_LOG: Record<string, ReadonlyArray<[Level, string]>> = {
 
 /**
  * The strip along the foot of the console. The first entries are the CV's own
- * figures and record counts; `avg run` and `warehouse` describe the simulated
+ * figures and record counts; `last run` and `warehouse` describe the simulated
  * runtime, which is the only thing here that is not read from the CV.
  */
 export const TICKER: MetricTickerItem[] = [
@@ -190,7 +190,7 @@ export const TICKER: MetricTickerItem[] = [
 	{ label: "roles", value: String(CV.experience.length) },
 	{ label: "skills listed", value: String(CV.skills.length) },
 	{ label: "based", value: CV.loc },
-	{ label: "avg run", value: "11.6 s" },
+	{ label: "last run", value: "11.6 s" },
 	{ label: "warehouse", value: "analytics_wh · XS" },
 	{ label: "status", value: CV.status, status: "ok" },
 ];

@@ -95,7 +95,7 @@ export function ReplayScreen() {
 						/>
 						<VideoPanel
 							autoPlay
-							caption={`full refresh · ${run.stages} stages · ${run.elapsed} · generated placeholder capture`}
+							caption={`${run.note} · ${run.stages} stages · ${run.elapsed} · generated placeholder capture`}
 							duration={run.elapsed.slice(0, 5)}
 							emptyHint="drop a screen recording of the run in public/media/ and pass it as src"
 							emptyLabel="no capture attached"
