@@ -23,9 +23,13 @@ Completed 2026-09-10 on `feat/update-central-cv-data`, created from refreshed `o
 - No `category` field was added. The gather subprocess makes that conditional on grouping being implemented, which is a presentation decision for the related-components task; the category order and membership are preserved in that subprocess document.
 - `CV.schema` is unchanged. The gather subprocess rules it out as a destination for career facts. Its `impact_pct` column is still noted as `verified`, which finding CV-12 asks to resolve.
 
-## One change outside `data.ts`
+## Two changes outside `data.ts`
+
+Both are regressions this data change caused, fixed here rather than left for a later task.
 
 `src/features/cv/cv-text.ts` printed each skill as `${s.value}/5 · ${s.level}`, which became `undefined/5 · undefined` for all 26 unscored skills. An unscored skill now prints as its name alone. This is one line in the download builder, taken to avoid shipping literal `undefined` in a downloadable CV. The rest of the download's headings and copy stay with the related-components task.
+
+`src/features/cv/Panes.tsx` laid out each contact row as an unshrinkable flex line. The 340px inspector leaves roughly 182px for the value after the icon, the fixed 64px key and the padding. The demo values fit; the actual email needs about 226px and the LinkedIn URL about 343px, so the row pushed the pane into horizontal scrolling. The value span now shrinks and wraps mid-token, and the icon and key no longer shrink. Raised by the automated reviewer on pull request 18.
 
 ## Known interim state
 
