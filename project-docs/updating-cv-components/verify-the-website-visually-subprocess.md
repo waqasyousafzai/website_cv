@@ -55,12 +55,14 @@ This is a local browser verification, not a cross-browser or physical-device cer
 Screenshots are stored in [visual-verification](visual-verification/). They record individual moments; logs, counters, ticker and video continue to animate.
 
 - [Boot, intermediate](visual-verification/boot-768.png)
+- [Boot, wide](visual-verification/boot-1440.png)
 - [Pipeline, narrow](visual-verification/pipeline-375.png)
 - [Pipeline, intermediate](visual-verification/pipeline-768.png)
 - [Schema after containment fix](visual-verification/schema-375.png)
 - [Contact, narrow](visual-verification/contact-375.png)
 - [Replay history, narrow](visual-verification/replay-history-375.png)
-- [Replay, intermediate](visual-verification/replay-1024.png)
+- [Replay, intermediate stacked](visual-verification/replay-768.png)
+- [Replay, intermediate split](visual-verification/replay-1024.png)
 - [Replay, wide](visual-verification/replay-1440.png)
 - [Completed pipeline and visible progress](visual-verification/pipeline-complete-1440.png)
 
