@@ -8,4 +8,6 @@ Purpose: Guide the replacement of the website's placeholder CV content with the 
 [x] 4. Update Related Components and Text — Task
 [x] 5. Validate Content and Type Safety — Subprocess
 [x] 6. Verify the Website Visually — Subprocess
-[ ] 7. Finalize the CV Update — Task
+[x] 7. Finalize the CV Update — Task
+
+All seven stages are complete as of 2026-09-10. The closing confirmation, the handoff state and the items carried forward are recorded in [Finalize the CV Update](finalize-the-cv-update-task.md).
