@@ -2,7 +2,7 @@
 
 [x] Update any component-specific labels, copy, download text, pipeline output, logs, and replay content that must stay consistent with the actual CV data.
 
-Implemented 2026-09-10 on `feat/update-related-components-and-text`, created from refreshed `origin/main` using [Task Initiation](../../Workflow/task-initiation.md). It follows [Update Central CV Data](update-central-cv-data-task.md), which listed the interim state this task clears, and resolves the duplicated-content findings in the [existing-content review](review-existing-cv-content-subprocess.md).
+Implemented 2026-09-10 on `feat/update-related-components-and-text`, created from refreshed `origin/main` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). It follows [Update Central CV Data](update-central-cv-data-task.md), which listed the interim state this task clears, and resolves the duplicated-content findings in the [existing-content review](review-existing-cv-content-subprocess.md).
 
 ## Approach
 

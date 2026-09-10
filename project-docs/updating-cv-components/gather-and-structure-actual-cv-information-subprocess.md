@@ -4,7 +4,7 @@
 [x] 2. Normalize names, dates, descriptions, links, and metrics for consistent presentation
 [x] 3. Map the finalized information to the project's existing data shapes
 
-Started 2026-09-10 on `docs/gather-actual-cv-information`, created from refreshed `origin/main` using [Task Initiation](../../Workflow/task-initiation.md). Completed source collection and mapping on 2026-09-10 after the owner supplied `docs/private/` as the CV location.
+Started 2026-09-10 on `docs/gather-actual-cv-information`, created from refreshed `origin/main` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). Completed source collection and mapping on 2026-09-10 after the owner supplied `docs/private/` as the CV location.
 
 This document now contains the entire former worksheet, followed by the actual normalized information and implementation handoff. Application updates remain in the later central-data and related-components tasks.
 

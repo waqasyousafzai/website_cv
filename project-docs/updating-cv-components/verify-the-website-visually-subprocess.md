@@ -4,7 +4,7 @@
 [x] 2. Check narrow, intermediate, and wide layouts for clipping or overflow
 [x] 3. Confirm navigation, CV download, contact interaction, and rerun behavior
 
-Completed 2026-09-10 on `fix/verify-website-visually`, created from refreshed `origin/main` at `fb7d4a6` using [Task Initiation](../../Workflow/task-initiation.md). The branch began as `chore/verify-website-visually` and was renamed after browser checks found four rendering defects.
+Completed 2026-09-10 on `fix/verify-website-visually`, created from refreshed `origin/main` at `fb7d4a6` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). The branch began as `chore/verify-website-visually` and was renamed after browser checks found four rendering defects.
 
 ## Browser and coverage
 

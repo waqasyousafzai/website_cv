@@ -2,7 +2,7 @@
 
 [x] Replace the placeholder values in `src/features/cv/data.ts` with the structured actual CV information.
 
-Completed 2026-09-10 on `feat/update-central-cv-data`, created from refreshed `origin/main` using [Task Initiation](../../Workflow/task-initiation.md). The values come from the normalized records in [Gather and Structure Actual CV Information](gather-and-structure-actual-cv-information-subprocess.md), whose source is `docs/private/`.
+Completed 2026-09-10 on `feat/update-central-cv-data`, created from refreshed `origin/main` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). The values come from the normalized records in [Gather and Structure Actual CV Information](gather-and-structure-actual-cv-information-subprocess.md), whose source is `docs/private/`.
 
 ## What changed
 
