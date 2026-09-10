@@ -27,4 +27,14 @@ Begin this section after the task is complete, including any optionally invoked 
    gh pr review <PR_NUMBER> --comment -b "..."
    ```
 
-4. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`. Suggest deleting the merged local and remote branches, and ask the user whether to delete them. If deletion is already authorized, proceed without asking again.
+   Maintain a consistent review format:
+
+   - **File changed**
+   - **Type of Change**
+   - **Diff Analysis**
+   - **Review Assessment**
+
+4. Ask the user if the branch's commits should be squashed before merging.
+5. Present the review summary to the user in a Markdown file in the IDE and obtain explicit sign-off before executing the merge. Delete the Markdown file after the merge.
+6. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`.
+7. Suggest to the user if the merged local and remote branches should be deleted.

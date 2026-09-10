@@ -43,16 +43,3 @@ These statuses describe the initial scaffold. Check the repository before assumi
 - `npm run format` — check formatting; pass `-- --write` to apply formatting.
 
 For application changes, run the relevant Biome checks and a production build. The build script does not run a separate TypeScript type check; use `npx tsc --noEmit` when validating TypeScript changes. No automated test script is currently configured.
-
-## Git
-
-- Before making notable changes, suggest creating a dedicated branch. Use a concise name with conventional prefix such as `feat/`, `fix/`, `docs/`. 
-- When opening a pull request:
-  - Submit a formal review directly to GitHub's PR review system (e.g., via `gh pr review <PR_NUMBER> --comment -b "..."`).
-  - Maintain a consistent review format:
-    - **File changed**
-    - **Type of Change**
-    - **Diff Analysis**
-    - **Review Assessment**
-  - Ask whether the branch's commits should be squashed before merging.
-  - Present review summary to the user in a MD on the IDE and obtain explicit sign-off before executing the merge. Delete the MD file after merge.
