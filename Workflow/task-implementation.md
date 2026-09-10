@@ -8,16 +8,34 @@
 
 Optional commands: `/grill-with-docs` and `/implement`.
 
-## 2. Project Lifecycle Tracking — After Task Completion
+## 2. Local Branch Setup
 
-Begin this section after the task is complete, including any optionally invoked `/grill-with-docs` and `/implement` workflows.
+1. Before making any notable changes, create and switch to a dedicated branch from `origin/main`, using a naming convention derived from conventional commits.
+2. Once the branch exists, confirm it to the user on a single line, then begin implementing the task.
+3. Once the task is completed, confirm with the user and stop the conversation before moving onto Project Lifecycle Tracking.
+
+### Conventional Commits
+
+1. `feat` — a new feature
+2. `fix` — a bug fix
+3. `docs` — documentation-only changes
+4. `style` — formatting changes that don’t affect behavior, such as whitespace or lint fixes
+5. `refactor` — code changes that neither add a feature nor fix a bug
+6. `perf` — performance improvements
+7. `test` — adding or updating tests
+8. `build` — build system or dependency changes
+9. `ci` — CI/CD configuration changes
+10. `chore` — maintenance work that doesn’t fit the above
+11. `revert` — reverting a previous commit
+
+## 3. Project Lifecycle Tracking
 
 1. Identify the project associated with the task and locate the task's own entry in the relevant project folder, whether it is documented in a task file or a subprocess file.
 2. Present the identified project to the user and wait for confirmation before updating project lifecycle documentation.
 3. After confirmation, mark the completed task with a tick in its task or subprocess file.
 4. If the completed task was the final task in that file, locate the project's lifecycle markdown and mark the corresponding lifecycle stage with a tick.
 
-## 3. Remote Branch and Pull Request
+## 4. Remote Branch and Pull Request
 
 1. Push the local branch to the remote repository.
 2. Open a pull request targeting `main`.
@@ -34,7 +52,11 @@ Begin this section after the task is complete, including any optionally invoked 
    - **Diff Analysis**
    - **Review Assessment**
 
-4. Ask the user if the branch's commits should be squashed before merging.
-5. Present the review summary to the user in a Markdown file in the IDE and obtain explicit sign-off before executing the merge. Delete the Markdown file after the merge.
-6. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`.
-7. Suggest to the user if the merged local and remote branches should be deleted.
+4. Report the pull request URL to the user, then end the conversation with the `EndConversation` tool. Do not wait for, poll for, or ask about review feedback on the open pull request. Waiting on a human review leaves the session idle and consumes tokens without making progress.
+
+## 5. Merge and Cleanup
+
+1. Ask the user if the branch's commits should be squashed before merging.
+2. Present the review summary to the user in a Markdown file in the IDE and obtain explicit sign-off before executing the merge. Delete the Markdown file after the merge.
+3. After the pull request is merged, fetch `origin/main`, switch to local `main`, and fast-forward it to `origin/main`.
+4. Suggest to the user if the merged local and remote branches should be deleted.

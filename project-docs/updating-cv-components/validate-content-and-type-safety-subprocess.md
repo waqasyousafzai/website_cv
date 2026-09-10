@@ -4,7 +4,7 @@
 [x] 2. Run formatting, linting, and TypeScript validation
 [x] 3. Run a production build and resolve any validation failures
 
-Completed 2026-09-10 on `fix/validate-content-and-type-safety`, created from refreshed `origin/main` using [Task Initiation](../../Workflow/task-initiation.md). It follows [Update Related Components and Text](update-related-components-and-text-task.md) and checks that task's output rather than extending it.
+Completed 2026-09-10 on `fix/validate-content-and-type-safety`, created from refreshed `origin/main` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). It follows [Update Related Components and Text](update-related-components-and-text-task.md) and checks that task's output rather than extending it.
 
 The branch was opened as `chore/` and renamed to `fix/` before its first commit, because the content pass found real inaccuracies rather than only confirming clean tooling.
 

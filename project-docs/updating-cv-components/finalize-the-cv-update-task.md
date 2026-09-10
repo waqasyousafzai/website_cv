@@ -2,7 +2,7 @@
 
 [x] Confirm the updated CV content, validation results, and visual review are complete, then record the project as ready for handoff.
 
-Completed 2026-09-10 on `docs/finalize-the-cv-update`, created from refreshed `origin/main` at `105fe3e` using [Task Initiation](../../Workflow/task-initiation.md). This is the project's closing stage: it re-checks the five preceding stages against the shipped repository and records the result. No file under `src/`, `index.html` or `README.md` was changed, and no new capability was added.
+Completed 2026-09-10 on `docs/finalize-the-cv-update`, created from refreshed `origin/main` at `105fe3e` using [Task Implementation](../../Workflow/task-implementation.md#2-local-branch-setup). This is the project's closing stage: it re-checks the five preceding stages against the shipped repository and records the result. No file under `src/`, `index.html` or `README.md` was changed, and no new capability was added.
 
 ## 1. Content confirmation
 
