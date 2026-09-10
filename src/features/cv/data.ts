@@ -1,7 +1,9 @@
 import type { IconName, Level, SchemaColumn } from "@/components/design";
 
 /**
- * Every value the CV renders. Placeholder content — replace with the real CV.
+ * `CV` is the owner's actual CV content and the single source for the inspector
+ * panes and the text download. The stage records further down (`OUTPUT`,
+ * `LOG_FOR`, `ROWS`) still carry demo narration and are not derived from it yet.
  * Nothing here is fetched, which is why the app carries no query client.
  */
 
@@ -22,8 +24,10 @@ export interface CvRole {
 
 export interface CvSkill {
 	label: string;
-	value: number;
-	level: string;
+	/** Filled ticks on the meter, 1–5. Absent when the CV states no rating. */
+	value?: number;
+	/** Word for that rating, e.g. "daily driver". Absent alongside `value`. */
+	level?: string;
 }
 
 export interface CvProject {
@@ -39,91 +43,184 @@ export interface CvContact {
 	icon: IconName;
 }
 
-export const CV = {
-	name: "WAQAS YOUSAFZAI",
-	role: "Data Engineer",
-	loc: "Sydney, Australia",
+/**
+ * The whole record. Declared rather than inferred so an optional field an entry
+ * omits — a stat with no unit, a skill with no rating — stays part of the type.
+ */
+export interface Cv {
+	name: string;
+	role: string;
+	loc: string;
+	summary: string;
+	stats: CvStat[];
+	experience: CvRole[];
+	skills: CvSkill[];
+	projects: CvProject[];
+	education: CvRole[];
+	contact: CvContact[];
+	/** Illustrative pipeline columns for the demo, not CV facts. */
+	schema: SchemaColumn[];
+}
+
+export const CV: Cv = {
+	name: "Waqas Yousafzai",
+	role: "AWS Data Engineer",
+	loc: "Sydney, New South Wales",
 	summary:
-		"I build ingestion and transformation systems that stay boring under load. Six years across streaming and batch: Kafka to warehouse, dbt models, orchestration that pages nobody at 3am.",
+		"AWS Data Engineer with experience at a major UK bank, engineering production ETL pipelines that turn raw data into high-quality inputs for retail pricing decisions. Recently relocated to Sydney after travelling and seeking a new professional challenge.",
+	// Both counts are scoped to the Aug 2024 — Jan 2026 role rather than being a
+	// current inventory. The monetary figures stay qualified in the prose below.
 	stats: [
-		{ label: "Rows / day", value: "1.2", unit: "B", delta: "+18% qoq" },
-		{ label: "On-time delivery", value: "99.98", unit: "%" },
-		{ label: "Pipelines owned", value: "41" },
-		{ label: "Years", value: "6" },
-	] satisfies CvStat[],
+		{ label: "Critical ETL pipelines delivered at NatWest", value: "4" },
+		{ label: "Data engineering team supported by CI/CD", value: "5" },
+	],
 	experience: [
 		{
-			when: "2022 — present",
-			role: "Senior Data Engineer",
-			org: "Acme Data Platform",
-			body: "Own the ingest layer: 180 Kafka topics into Snowflake. Rebuilt the loader; nightly runtime 6h to 40m and on-call pages down 70%.",
-			tags: ["Kafka", "Snowflake", "Airflow", "dbt", "Terraform"],
+			when: "Aug 2024 — Jan 2026",
+			role: "Price Optimisation Manager (Senior Data Engineer)",
+			org: "NatWest",
+			body: "Based in London, United Kingdom. Led development for a $2M mortgage optimiser initiative, collaborating with Data & Analytics, Pricing and Finance on data products for mortgage interest-rate pricing. Finance forecast $17M in annual revenue from the delivered products. Engineered four critical AWS ETL pipelines using Glue for ingestion, EMR for Spark compute, S3 and Snowflake for storage, notebooks for exploratory data analysis, and Airflow for orchestration. Documented end-to-end data flows in Confluence with draw.io. Implemented GitLab CI/CD for integration testing, code validation and release management across a team of five data engineers. Maintained freshness, accuracy and reliability SLAs through resource optimisation, debugging and testing.",
+			tags: [
+				"AWS",
+				"AWS Glue",
+				"Amazon EMR",
+				"Apache Spark",
+				"Amazon S3",
+				"Snowflake",
+				"Apache Airflow",
+				"GitLab",
+				"CI/CD",
+				"Confluence",
+				"draw.io",
+			],
 		},
 		{
-			when: "2020 — 2022",
-			role: "Data Engineer",
-			org: "Northwind Logistics",
-			body: "Built the warehouse from scratch: 90 dbt models, contract tests on every source, freshness SLAs published to the business.",
-			tags: ["dbt", "BigQuery", "Python", "Dagster"],
+			when: "Jul 2023 — Aug 2024",
+			role: "Data and Analytics Engineer",
+			org: "NatWest",
+			body: "Based in London, United Kingdom. Built pricing pipelines and supported Snowflake setup and integration during migration from Teradata. Partnered with Finance and Pricing to build a what-if mortgage pricing scenario modelling KPI impacts, with projected annual revenue of $2M. Implemented AWS ETL workflows using Lambda, Glue, Step Functions and EventBridge according to compute, orchestration and cost requirements. Configured Snowflake RBAC with custom roles and least privilege. Improved queries, micro-partition pruning and warehouse sizing using query profiles and history. Used tagging for automated PII masking and team-level compute-cost attribution. Partnered with analysts on scheduled Snowflake ELT SQL tasks and presentation views for Tableau. Investigated pipeline and warehouse issues through deep dives and root cause analysis.",
+			tags: [
+				"AWS",
+				"AWS Lambda",
+				"AWS Glue",
+				"AWS Step Functions",
+				"Amazon EventBridge",
+				"Snowflake",
+				"Teradata",
+				"SQL",
+				"Tableau",
+			],
 		},
 		{
-			when: "2019 — 2020",
-			role: "Analytics Engineer",
-			org: "Vertex Retail",
-			body: "Replaced 40 hand-run SQL scripts with a scheduled DAG and a tested semantic layer.",
-			tags: ["Airflow", "Postgres", "Looker"],
+			when: "Jun 2016 — Jul 2023",
+			role: "Financial Trader (Data Scientist)",
+			org: "Self-employed",
+			body: "Based in Norwich, United Kingdom. Created trading strategies using machine learning and deep learning. The CV reports outperforming the S&P benchmark by 10% for three years and ranking among approximately the top 2% of retail traders. Developed profitable models using XGBoost, genetic algorithms, Bayesian optimisation, FP-Growth, KNN and Isolation Forest. Integrated Twitter sentiment analysis using NLP to add alternative data signals. Automated an Excel VBA risk-management calculator and trade logger.",
+			tags: [
+				"XGBoost",
+				"Genetic algorithms",
+				"Bayesian optimisation",
+				"FP-Growth",
+				"KNN",
+				"Isolation Forest",
+				"NLP",
+				"Excel",
+				"VBA",
+			],
 		},
-	] satisfies CvRole[],
+	],
+	// Listed in the CV's own order: cloud, devops, languages, visualization, soft
+	// skills. It states no 1-5 ratings, so `value` and `level` are left absent
+	// rather than scored from employment history.
 	skills: [
-		{ label: "Airflow", value: 5, level: "daily driver" },
-		{ label: "dbt", value: 5, level: "daily driver" },
-		{ label: "Snowflake", value: 5, level: "daily driver" },
-		{ label: "Python", value: 5, level: "daily driver" },
-		{ label: "Kafka", value: 4, level: "production" },
-		{ label: "Spark", value: 3, level: "production" },
-		{ label: "Terraform", value: 3, level: "production" },
-		{ label: "Kubernetes", value: 2, level: "working" },
-	] satisfies CvSkill[],
+		{ label: "AWS" },
+		{ label: "Amazon EMR" },
+		{ label: "Amazon EC2" },
+		{ label: "AWS Glue" },
+		{ label: "AWS Lambda" },
+		{ label: "Apache Airflow (Amazon MWAA)" },
+		{ label: "Amazon S3" },
+		{ label: "Snowflake" },
+		{ label: "GitLab" },
+		{ label: "Version control" },
+		{ label: "Branching" },
+		{ label: "Pull requests" },
+		{ label: "CI/CD pipelines" },
+		{ label: "Agile" },
+		{ label: "Python" },
+		{ label: "SQL" },
+		{ label: "PySpark" },
+		{ label: "Scala" },
+		{ label: "C++" },
+		{ label: "VBA" },
+		{ label: "Tableau" },
+		{ label: "Matplotlib" },
+		{ label: "Senior stakeholder management" },
+		{ label: "Cross-functional collaboration" },
+		{ label: "Data storytelling" },
+		{ label: "Ownership mentality" },
+	],
+	// The CV names no separate projects; these group the work already described
+	// in `experience`, so their outcomes are the same evidence, not extra wins.
 	projects: [
 		{
-			name: "topic_to_table",
-			kind: "open source",
-			body: "Declarative Kafka-to-warehouse loader. Schema drift handling, exactly-once landing, 1.2B rows/day in production.",
-			tags: ["Python", "Kafka", "Snowflake"],
+			name: "Mortgage pricing data products",
+			kind: "Employment case study · NatWest",
+			body: "Led development for a $2M mortgage optimiser initiative and delivered four critical AWS ETL pipelines supporting mortgage pricing. Finance forecast $17M in annual revenue from the delivered data products.",
+			tags: [
+				"AWS Glue",
+				"Amazon EMR",
+				"Apache Spark",
+				"Amazon S3",
+				"Snowflake",
+				"Apache Airflow",
+			],
 		},
 		{
-			name: "dq_contracts",
-			kind: "internal",
-			body: "Source contract tests generated from dbt schema files; blocks a release when a producer breaks a column.",
-			tags: ["dbt", "Great Expectations"],
+			name: "Mortgage pricing what-if scenarios",
+			kind: "Employment case study · NatWest",
+			body: "Partnered with Finance and Pricing to model KPI impacts from hypothetical mortgage price changes. Implemented AWS ETL workflows for a scenario with projected annual revenue of $2M.",
+			tags: [
+				"AWS Lambda",
+				"AWS Glue",
+				"AWS Step Functions",
+				"Amazon EventBridge",
+			],
 		},
 		{
-			name: "cost_lens",
-			kind: "internal",
-			body: "Warehouse spend attribution per model. Found and cut 38% of nightly compute.",
-			tags: ["Snowflake", "Streamlit"],
+			name: "Machine-learning trading strategies",
+			kind: "Self-employment case study",
+			body: "Developed trading models with XGBoost, genetic algorithms, Bayesian optimisation and data-mining techniques. Integrated Twitter sentiment analysis and automated an Excel VBA risk-management calculator and trade logger.",
+			tags: [
+				"XGBoost",
+				"Genetic algorithms",
+				"Bayesian optimisation",
+				"FP-Growth",
+				"KNN",
+				"Isolation Forest",
+				"NLP",
+				"Excel",
+				"VBA",
+			],
 		},
-	] satisfies CvProject[],
+	],
 	education: [
 		{
-			when: "2015 — 2019",
-			role: "BSc Computer Science",
-			org: "NUST",
-			body: "Databases, distributed systems, numerical methods.",
+			when: "2015",
+			role: "Biological Sciences (BSc)",
+			org: "University of East Anglia",
+			body: "Norwich, United Kingdom.",
 		},
-		{
-			when: "2023",
-			role: "SnowPro Advanced: Data Engineer",
-			org: "Snowflake",
-			body: "Certification.",
-		},
-	] satisfies CvRole[],
+	],
 	contact: [
-		{ k: "email", v: "waqas@example.com", icon: "at-sign" },
-		{ k: "github", v: "github.com/waqas", icon: "github" },
-		{ k: "linkedin", v: "in/waqas-yousafzai", icon: "linkedin" },
-		{ k: "phone", v: "+92 300 000 0000", icon: "phone" },
-	] satisfies CvContact[],
+		{ k: "email", v: "waqasyousafzai123@outlook.com", icon: "at-sign" },
+		{
+			k: "linkedin",
+			v: "https://www.linkedin.com/in/waqas-yousafzai/",
+			icon: "linkedin",
+		},
+		{ k: "phone", v: "0468 404 422", icon: "phone" },
+	],
 	schema: [
 		{ name: "role_id", type: "bigint", key: true, note: "pk" },
 		{ name: "employer", type: "varchar(120)" },
@@ -131,7 +228,7 @@ export const CV = {
 		{ name: "ended_at", type: "date", note: "null = current" },
 		{ name: "stack", type: "array<varchar>" },
 		{ name: "impact_pct", type: "number(5,2)", note: "verified" },
-	] satisfies SchemaColumn[],
+	],
 };
 
 export type PaneId =
