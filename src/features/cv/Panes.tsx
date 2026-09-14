@@ -53,6 +53,7 @@ function Profile() {
 			<p className="m-0 font-body text-muted">{CV.summary}</p>
 			<div className="flex flex-wrap gap-s-4">
 				<Badge status="ok">{CV.status}</Badge>
+				<Badge status="ok">availability date · {CV.availability}</Badge>
 			</div>
 		</div>
 	);
