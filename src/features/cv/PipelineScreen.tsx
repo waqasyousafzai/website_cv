@@ -302,12 +302,15 @@ export function PipelineScreen() {
 										Open in inspector
 									</Button>
 								}
-								duration={status[openNode.id] === "idle" ? "—" : "1.4s"}
+								// Before a run there is no count or timing to report. Say which
+								// figure is missing and why, rather than a bare "not built" and a
+								// dash; the meta line cannot wrap, so it stays short.
+								duration={status[openNode.id] === "idle" ? undefined : "1.4s"}
 								kind={openNode.kind}
 								onClose={() => setOpenId(null)}
 								rows={
 									status[openNode.id] === "idle"
-										? "not built"
+										? "rows: not run"
 										: ROWS[openNode.id]
 								}
 								side={box.side}

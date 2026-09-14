@@ -58,6 +58,9 @@ export interface Cv {
 	/** What the owner is looking for, in one line. Every badge, log and ticker
 	 *  entry that says it reads this, so they cannot disagree. */
 	status: string;
+	/** When the owner can start, e.g. "Immediate" or a date. Read the same way
+	 *  as `status`, wherever availability is stated. */
+	availability: string;
 	stats: CvStat[];
 	experience: CvRole[];
 	skills: CvSkill[];
@@ -70,25 +73,19 @@ export interface Cv {
 
 export const CV: Cv = {
 	name: "Waqas Yousafzai",
-	role: "AWS Data Engineer",
-	loc: "Sydney, New South Wales",
+	role: "Data Engineer",
+	loc: "Sydney, NSW",
 	summary:
-		"AWS Data Engineer with experience at a major UK bank, engineering production ETL pipelines that turn raw data into high-quality inputs for retail pricing decisions. Recently relocated to Sydney after travelling and seeking a new professional challenge.",
-	// The CV states no availability date, notice period or work arrangement. A
-	// new challenge is the one preference it does state, in the summary above.
-	status: "seeking a new challenge",
-	// Both counts are scoped to the Aug 2024 — Jan 2026 role rather than being a
-	// current inventory. The monetary figures stay qualified in the prose below.
-	stats: [
-		{ label: "Critical ETL pipelines delivered at NatWest", value: "4" },
-		{ label: "Data engineering team supported by CI/CD", value: "5" },
-	],
+		"Data Engineer with experience at a major UK bank, engineering production ETL pipelines that turn raw data into high-quality inputs for retail pricing decisions. Recently relocated to Sydney after travelling and currently seeking a new professional challenge.",
+	status: "Available",
+	availability: "Immediate",
+	stats: [{ label: "Pipelines Delivered", value: "7" }],
 	experience: [
 		{
 			when: "Aug 2024 — Jan 2026",
 			role: "Price Optimisation Manager (Senior Data Engineer)",
 			org: "NatWest",
-			body: "Based in London, United Kingdom. Led development for a $2M mortgage optimiser initiative, collaborating with Data & Analytics, Pricing and Finance on data products for mortgage interest-rate pricing. Finance forecast $17M in annual revenue from the delivered products. Engineered four critical AWS ETL pipelines using Glue for ingestion, EMR for Spark compute, S3 and Snowflake for storage, notebooks for exploratory data analysis, and Airflow for orchestration. Documented end-to-end data flows in Confluence with draw.io. Implemented GitLab CI/CD for integration testing, code validation and release management across a team of five data engineers. Maintained freshness, accuracy and reliability SLAs through resource optimisation, debugging and testing.",
+			body: "Led development for a mortgage optimiser initiative, collaborating with Data & Analytics, Pricing and Finance on data products for mortgage interest-rate pricing.",
 			tags: [
 				"AWS",
 				"AWS Glue",
@@ -107,7 +104,7 @@ export const CV: Cv = {
 			when: "Jul 2023 — Aug 2024",
 			role: "Data and Analytics Engineer",
 			org: "NatWest",
-			body: "Based in London, United Kingdom. Built pricing pipelines and supported Snowflake setup and integration during migration from Teradata. Partnered with Finance and Pricing to build a what-if mortgage pricing scenario modelling KPI impacts, with projected annual revenue of $2M. Implemented AWS ETL workflows using Lambda, Glue, Step Functions and EventBridge according to compute, orchestration and cost requirements. Configured Snowflake RBAC with custom roles and least privilege. Improved queries, micro-partition pruning and warehouse sizing using query profiles and history. Used tagging for automated PII masking and team-level compute-cost attribution. Partnered with analysts on scheduled Snowflake ELT SQL tasks and presentation views for Tableau. Investigated pipeline and warehouse issues through deep dives and root cause analysis.",
+			body: "Built pricing pipelines to build a what-if mortgage pricing scenario modelling KPI impacts",
 			tags: [
 				"AWS",
 				"AWS Lambda",
@@ -124,7 +121,7 @@ export const CV: Cv = {
 			when: "Jun 2016 — Jul 2023",
 			role: "Financial Trader (Data Scientist)",
 			org: "Self-employed",
-			body: "Based in Norwich, United Kingdom. Created trading strategies using machine learning and deep learning. The CV reports outperforming the S&P benchmark by 10% for three years and ranking among approximately the top 2% of retail traders. Developed profitable models using XGBoost, genetic algorithms, Bayesian optimisation, FP-Growth, KNN and Isolation Forest. Integrated Twitter sentiment analysis using NLP to add alternative data signals. Automated an Excel VBA risk-management calculator and trade logger.",
+			body: "Created trading strategies and algorithms using machine learning models",
 			tags: [
 				"XGBoost",
 				"Genetic algorithms",
@@ -413,7 +410,7 @@ export const LOG_FOR: Record<NodeId, ReadonlyArray<[Level, string]>> = {
 	],
 	serve_contact: [
 		["info", "serve_contact: opening endpoint"],
-		["ok", `ready · ${CV.status}`],
+		["ok", `ready · ${CV.status} · availability date: ${CV.availability}`],
 	],
 };
 
@@ -433,6 +430,7 @@ export const OUTPUT: Record<
 			["role", CV.role],
 			["based", CV.loc],
 			["status", CV.status],
+			["availability date", CV.availability],
 		],
 	},
 	src_experience: {

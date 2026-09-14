@@ -187,10 +187,10 @@ export const RUN_LOG: Record<string, ReadonlyArray<[Level, string]>> = {
  */
 export const TICKER: MetricTickerItem[] = [
 	...CV.stats.map((s) => ({ label: s.label, value: s.value })),
-	{ label: "roles", value: String(CV.experience.length) },
 	{ label: "skills listed", value: String(CV.skills.length) },
 	{ label: "based", value: CV.loc },
 	{ label: "last run", value: "11.6 s" },
 	{ label: "warehouse", value: "analytics_wh · XS" },
 	{ label: "status", value: CV.status, status: "ok" },
+	{ label: "availability date", value: CV.availability, status: "ok" },
 ];

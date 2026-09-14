@@ -18,7 +18,12 @@ const bullet = (body: string) => `  ${body}`;
 export function buildCvText(): string {
 	const out: string[] = [];
 
-	out.push(CV.name, `${CV.role} · ${CV.loc} · ${CV.status}`, "", CV.summary);
+	out.push(
+		CV.name,
+		`${CV.role} · ${CV.loc} · ${CV.status} · availability date: ${CV.availability}`,
+		"",
+		CV.summary,
+	);
 
 	out.push("", ...heading("Numbers"), "");
 	for (const s of CV.stats) {
