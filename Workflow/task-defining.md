@@ -16,7 +16,15 @@ Use these working definitions:
 - **Subprocess:** Related activities within the parent process that benefit from an explicit internal workflow while remaining managed as part of the parent.
 - **Subproject:** A distinct deliverable that warrants its own scope, coordination, and lifecycle within the larger project.
 
-## 3. Execution Instructions
+## 3. Acceptance Criteria
+
+For a **task** or **subprocess** classification (not a subproject), define draft acceptance criteria that describe how the work will be verified as complete.
+
+Present the draft acceptance criteria to the user and wait for explicit confirmation. Do not create the task or subprocess markdown file until the user has confirmed the acceptance criteria.
+
+Once confirmed, include the acceptance criteria in the markdown file under an `## Acceptance Criteria` heading, as shown in the templates below.
+
+## 4. Execution Instructions
 
 Create the appropriate markdown output using the rules below for the classification that has already been determined.
 
@@ -30,6 +38,11 @@ Use a clear, lowercase, hyphenated filename based on the process name, followed 
 # [Process Name] - Task
 
 [ ] [The single item of work that needs to be completed]
+
+## Acceptance Criteria
+
+- [First confirmed criterion]
+- [Second confirmed criterion]
 ```
 
 Keep the task file to a single checklist item unless a short runbook is required to prevent important omissions.
@@ -46,6 +59,11 @@ Use a clear, lowercase, hyphenated filename based on the process name, followed 
 [ ] 1. [First subprocess activity]
 [ ] 2. [Second subprocess activity]
 [ ] 3. [Third subprocess activity]
+
+## Acceptance Criteria
+
+- [First confirmed criterion]
+- [Second confirmed criterion]
 ```
 
 The numbered checklist should contain only the main activities required to complete the subprocess.
@@ -72,6 +90,7 @@ project-docs/
 - Use the existing project folder and lifecycle file to determine where outputs belong.
 - Use clear, lowercase, hyphenated filenames.
 - Preserve the process name in the markdown heading.
+- For a task or subprocess, confirm the acceptance criteria with the user before creating the file, and include them under an `## Acceptance Criteria` heading.
 - Update `project-lifecycle.md` with the classification next to the relevant process step. For example: [ ] 1. Discovery — Subprocess
 - Do not create a subproject folder for a task or subprocess.
 - Do not create additional files unless the classification requires them.
