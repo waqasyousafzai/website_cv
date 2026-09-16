@@ -26,7 +26,7 @@ The video demonstrates a dark editorial learning interface built from near-black
 
 Study the supplied video and Reddit post to identify the defining visual qualities: near-black surfaces, warm gold accents, fine borders, editorial typography, spacious composition, compact controls, and restrained motion.
 
-[ ] 2. Current UI Audit — Subprocess
+[x] 2. Current UI Audit — Subprocess
 
 Review the existing `/`, `/pipeline`, and `/replay` routes, shared components, design tokens, and current behavior. Record which elements can be restyled and which require structural changes.
 
