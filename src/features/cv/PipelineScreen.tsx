@@ -330,7 +330,7 @@ export function PipelineScreen() {
 								}}
 								title={openNode.label}
 							>
-								<div className="mb-s-5 font-data text-lime-500 uppercase tracking-label">
+								<div className="mb-s-5 font-data text-signal-primary uppercase tracking-label">
 									{OUTPUT[openNode.id].head}
 								</div>
 								<div className="flex flex-col gap-s-4">

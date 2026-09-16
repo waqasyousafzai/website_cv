@@ -32,7 +32,7 @@ type MultilineProps = FieldShell & { multiline: true } & Omit<
 		"prefix" | "className" | "style"
 	>;
 
-/** Mono text field in an inset well. Focus paints a lime hairline. */
+/** Mono text field in an inset well. Focus paints a gold hairline. */
 export type InputProps = SingleLineProps | MultilineProps;
 
 export function Input(props: InputProps) {

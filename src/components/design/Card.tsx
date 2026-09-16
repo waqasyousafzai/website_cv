@@ -18,7 +18,7 @@ export interface CardProps
 	/** Fine grid texture behind the body. @default false */
 	grid?: boolean;
 	interactive?: boolean;
-	/** Lime hairline — marks the active/selected card. @default false */
+	/** Gold hairline — marks the active/selected card. @default false */
 	signal?: boolean;
 	/** @default true */
 	padded?: boolean;

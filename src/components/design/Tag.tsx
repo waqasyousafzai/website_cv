@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /** Neutral metadata chip — tech stack, tools, filters. */
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
-	/** Lime treatment for selected filters. @default false */
+	/** Gold treatment for selected filters. @default false */
 	signal?: boolean;
 	/** Renders a dismiss affordance. */
 	onRemove?: () => void;

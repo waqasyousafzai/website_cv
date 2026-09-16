@@ -1,7 +1,7 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** Square checkbox, lime fill when on. Controlled. */
+/** Square checkbox, gold fill when on. Controlled. */
 export interface CheckboxProps {
 	checked?: boolean;
 	onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
