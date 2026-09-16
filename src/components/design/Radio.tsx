@@ -1,7 +1,7 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** Single-choice control; pill box with a glowing lime dot. */
+/** Single-choice control; pill box with a glowing gold dot. */
 export interface RadioProps {
 	checked?: boolean;
 	onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

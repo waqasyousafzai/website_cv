@@ -67,7 +67,7 @@ export function BootScreen() {
 							{i < NAME_PARTS.length - 1 && <br />}
 						</span>
 					))}
-					<span className="text-lime-500">.</span>
+					<span className="text-signal-primary">.</span>
 				</div>
 				<div className="mt-s-5 font-data text-dim uppercase tracking-tag">
 					{CV.role} / pipeline cv v2.4

@@ -15,6 +15,9 @@
   --topbar-h:52px; --statusbar-h:28px;
   --content-max:1180px; --prose-max:68ch;
 
+  /* border widths — hairline structural rule vs. a deliberate heavier accent */
+  --border-w-hair:1px; --border-w-emphasis:2px;
+
   /* radii — mostly square; corners get notched, not rounded */
   --r-0:0; --r-1:2px; --r-2:3px; --r-3:6px; --r-pill:999px;
   --notch-8:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));

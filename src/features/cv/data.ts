@@ -259,7 +259,7 @@ export const SKILL_GROUPS: SkillGroup[] = CV.skills.reduce<SkillGroup[]>(
 
 /**
  * The name as the display lockups take it: the boot panel stacks the parts, the
- * topbar joins them with the lime full stop, the rail shows the initials and the
+ * topbar joins them with the gold full stop, the rail shows the initials and the
  * download names the file. All of them read the profile rather than repeat it.
  */
 export const NAME_PARTS = CV.name.split(" ");

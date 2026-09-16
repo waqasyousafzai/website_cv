@@ -30,7 +30,7 @@ Study the supplied video and Reddit post to identify the defining visual qualiti
 
 Review the existing `/`, `/pipeline`, and `/replay` routes, shared components, design tokens, and current behavior. Record which elements can be restyled and which require structural changes.
 
-[ ] 3. Visual System Mapping — Task
+[x] 3. Visual System Mapping — Task
 
 Translate the reference into project-wide tokens for color, typography, spacing, borders, shadows, iconography, and animation. Update the vendored design system at its source instead of applying scattered page-level overrides.
 

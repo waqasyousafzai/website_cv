@@ -26,7 +26,7 @@ export function Rail({
 		// `ds-iconbtn--md` at every width: that 34px sits in an unlayered design
 		// system rule, which no Tailwind utility can win against per breakpoint.
 		<div className="flex w-s-11 flex-none flex-col items-center gap-s-3 border-hair border-r bg-void-1 py-s-3 row:gap-s-4 row:py-s-4 console:w-rail console:gap-s-5 console:py-s-5">
-			<div className="font-display text-[14px] text-lime-500 text-glow">
+			<div className="font-display text-[14px] text-signal-primary text-glow">
 				{INITIALS}
 			</div>
 			<div className="h-px w-[20px] bg-line console:w-[24px]" />
@@ -91,7 +91,7 @@ export function TopBar({ right }: { right?: ReactNode }) {
 		<div className="flex min-h-topbar flex-none flex-wrap items-center gap-x-s-5 gap-y-s-3 border-hair border-b bg-void-1 px-s-5 py-s-3 row:h-topbar row:flex-nowrap row:py-s-0 console:gap-x-s-7 console:px-s-7">
 			<span className="font-display text-[13px] text-ink-0 tracking-display">
 				{NAME_PARTS[0].toUpperCase()}
-				<span className="text-lime-500">.</span>
+				<span className="text-signal-primary">.</span>
 				{NAME_PARTS.slice(1).join(" ").toUpperCase()}
 			</span>
 			<span className="hidden font-data text-dim uppercase tracking-label split:inline">

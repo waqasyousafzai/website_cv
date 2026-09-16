@@ -6,7 +6,7 @@ import type { Status } from "./types";
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 	/** @default "idle" */
 	status?: Status;
-	/** Filled lime treatment for a single hero emphasis. @default false */
+	/** Filled gold treatment for a single hero emphasis. @default false */
 	solid?: boolean;
 	/** @default true */
 	dot?: boolean;

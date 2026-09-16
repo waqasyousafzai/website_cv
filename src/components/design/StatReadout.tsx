@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** Single metric with a lime left rail — throughput, uptime, years, cost saved. */
+/** Single metric with a gold left rail — throughput, uptime, years, cost saved. */
 export interface StatReadoutProps extends HTMLAttributes<HTMLDivElement> {
 	label: ReactNode;
 	/** Display-face number. Keep it short: "1.2B", "99.98%", "7". */

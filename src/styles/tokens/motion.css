@@ -1,5 +1,6 @@
 :root{
   --dur-instant:80ms; --dur-fast:140ms; --dur-base:220ms; --dur-slow:420ms; --dur-flow:1400ms;
+  --dur-pulse:1.2s; --dur-blink:1s;
   --ease-out:cubic-bezier(.2,.8,.2,1);
   --ease-in-out:cubic-bezier(.6,0,.35,1);
   --ease-snap:cubic-bezier(.16,1.02,.3,1);
@@ -18,6 +19,12 @@
 @keyframes ds-count{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){
   :root{--dur-fast:0ms;--dur-base:0ms;--dur-slow:0ms}
-  .ds-node--running::after,.ds-ticker__track,.ds-spark__head,.ds-spark__line--draw,.ds-video__scan{animation:none}
-  .ds-spark__line--draw{stroke-dashoffset:0}
+  /* !important is required, not decorative: ds-components.css imports after this
+     file, so its unconditional per-component `animation:`/`stroke-dashoffset`
+     declarations share the exact same selector specificity as these overrides and
+     sit later in source order — without !important they win the cascade and this
+     block has no effect. Confirmed by runtime cascade inspection (see Task 5's
+     Verification section); do not remove without re-verifying in a browser. */
+  .ds-node--running::after,.ds-ticker__track,.ds-spark__head,.ds-spark__line--draw,.ds-video__scan,.ds-node--running .ds-node__icon,.ds-video__dot--live,.ds-badge--running .ds-badge__dot,.ds-graph__edge--live,.ds-log__cursor{animation:none!important}
+  .ds-spark__line--draw{stroke-dashoffset:0!important}
 }

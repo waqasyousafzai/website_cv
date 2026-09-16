@@ -1,13 +1,22 @@
 /* SUBSTITUTED WEBFONTS — no source font binaries were provided.
-   Michroma, IBM Plex Mono and Space Grotesk are pulled from Google Fonts by the
-   stylesheet <link> in index.html. Replace both with local @font-face rules if
-   licensed files arrive.
+   Sora, IBM Plex Mono and Space Grotesk are pulled from Google Fonts by the
+   stylesheet <link> in index.html. Replace all three with local @font-face
+   rules if licensed files arrive.
+
+   Sora replaces the original Michroma display face: Michroma ships only one
+   static weight (400/Regular) on Google Fonts, so it could never satisfy the
+   brief's repeated "light-weight editorial heading" requirement at any size.
+   Sora ships genuine static weights down to 100, and is used here at 200
+   (ExtraLight — see --fw-extralight in typography.css) for --type-hero /
+   --type-h1 / --type-h2. It stays in the same geometric-sans territory as
+   the untouched Space Grotesk body face, so the three-voice system's
+   character stays coherent.
 
    These three stacks are mirrored in the `@theme` block of src/styles.css so
    Tailwind's font-display / font-mono / font-sans utilities resolve to the same
    faces. Change them together. */
 :root{
-  --font-display:"Michroma",system-ui,sans-serif;
+  --font-display:"Sora",system-ui,sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
   --font-sans:"Space Grotesk","Helvetica Neue",system-ui,sans-serif;
 }
