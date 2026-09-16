@@ -89,7 +89,7 @@ export function TopBar({ right }: { right?: ReactNode }) {
 		// becomes a minimum. Breadcrumb and sparkline are progressive: the
 		// breadcrumb arrives at `split:`, the throughput readout at `console:`.
 		<div className="flex min-h-topbar flex-none flex-wrap items-center gap-x-s-5 gap-y-s-3 border-hair border-b bg-void-1 px-s-5 py-s-3 row:h-topbar row:flex-nowrap row:py-s-0 console:gap-x-s-7 console:px-s-7">
-			<span className="font-display text-[13px] text-ink-0 tracking-display">
+			<span className="font-display font-extralight text-[13px] text-ink-0 tracking-display">
 				{NAME_PARTS[0].toUpperCase()}
 				<span className="text-signal-primary">.</span>
 				{NAME_PARTS.slice(1).join(" ").toUpperCase()}

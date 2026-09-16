@@ -104,6 +104,19 @@
 	--text-h1: var(--fs-h1);
 	--text-hero: var(--fs-hero);
 
+	/*
+	 * Tailwind's own `--font-weight-*` theme keys already carry literal numbers
+	 * (e.g. 200 for `font-extralight`) that happen to match this scale, but only
+	 * this override makes them track `--fw-*` as the single source of truth
+	 * instead of a same-value coincidence.
+	 */
+	--font-weight-extralight: var(--fw-extralight);
+	--font-weight-light: var(--fw-light);
+	--font-weight-normal: var(--fw-regular);
+	--font-weight-medium: var(--fw-medium);
+	--font-weight-semibold: var(--fw-semibold);
+	--font-weight-bold: var(--fw-bold);
+
 	--tracking-display: var(--ls-display);
 	--tracking-label: var(--ls-label);
 	--tracking-tag: var(--ls-tag);
