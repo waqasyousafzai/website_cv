@@ -34,7 +34,7 @@ Review the existing `/`, `/pipeline`, and `/replay` routes, shared components, d
 
 Translate the reference into project-wide tokens for color, typography, spacing, borders, shadows, iconography, and animation. Update the vendored design system at its source instead of applying scattered page-level overrides.
 
-[ ] 4. App Shell Transformation — Subprocess
+[x] 4. App Shell Transformation — Subprocess
 
 Restyle the shared navigation, page frames, backgrounds, headings, controls, and global states so every route belongs to the new visual language.
 

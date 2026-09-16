@@ -58,7 +58,7 @@ export function BootScreen() {
 				className="w-full max-w-[620px] border border-hair bg-panel p-s-7 shadow-panel row:p-s-9 console:p-s-11"
 				style={{ clipPath: "var(--notch-14)" }}
 			>
-				<div className="font-display text-h3 text-ink-0 leading-[1.05] tracking-display row:text-h2">
+				<div className="font-display font-extralight text-h3 text-ink-0 leading-[1.05] tracking-display row:text-h2">
 					{/* One line per part of the name, so the lockup follows the profile
 					    rather than repeating it. */}
 					{NAME_PARTS.map((part, i) => (
