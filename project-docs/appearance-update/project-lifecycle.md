@@ -22,7 +22,7 @@ The post presents a "less is more" approach to prompting for interface design. I
 
 The video demonstrates a dark editorial learning interface built from near-black surfaces, warm gold highlights, thin rules, large lightweight headings, small uppercase labels, subdued body copy, and precise data-rich diagrams. It combines generous negative space with compact controls, fine-grained metrics, node-and-line visualizations, timelines, progress blocks, restrained glow, and subtle transitions. These qualities are the primary visual reference for the appearance update; the source product's content and branding should not be copied.
 
-[ ] 1. Reference Capture — Task
+[x] 1. Reference Capture — Task
 
 Study the supplied video and Reddit post to identify the defining visual qualities: near-black surfaces, warm gold accents, fine borders, editorial typography, spacious composition, compact controls, and restrained motion.
 
