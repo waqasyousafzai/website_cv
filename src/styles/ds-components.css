@@ -19,13 +19,14 @@
 .ds-btn--block{width:100%}
 
 /* ── IconButton ─────────────────────────────────────────── */
-.ds-iconbtn{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:var(--border-w-hair) solid transparent;border-radius:var(--r-1);color:var(--text-muted);cursor:pointer;transition:var(--t-hover)}
+.ds-iconbtn{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:var(--border-w-hair) solid transparent;border-radius:var(--r-1);color:var(--text-muted);cursor:pointer;transition:var(--t-hover),transform var(--dur-instant) var(--ease-out)}
 .ds-iconbtn--sm{width:26px;height:26px}
 .ds-iconbtn--md{width:34px;height:34px}
 .ds-iconbtn--lg{width:42px;height:42px}
 .ds-iconbtn:hover{color:var(--signal-primary);background:var(--surface-active);border-color:var(--border-signal)}
 .ds-iconbtn--bordered{border-color:var(--border-line);background:var(--surface-card)}
 .ds-iconbtn--active{color:var(--signal-primary);background:var(--gold-a16);border-color:var(--border-signal)}
+.ds-iconbtn:active{transform:translateY(1px)}
 .ds-iconbtn[disabled]{opacity:.38;pointer-events:none}
 
 /* ── Field shell (Input / Select) ───────────────────────── */
@@ -58,6 +59,7 @@
 .ds-check--disabled{opacity:.4;pointer-events:none}
 .ds-switch{display:inline-flex;align-items:center;gap:var(--s-5);cursor:pointer;font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-muted)}
 .ds-switch__track{position:relative;width:38px;height:18px;background:var(--surface-input);border:var(--border-w-hair) solid var(--border-strong);border-radius:var(--r-1);transition:var(--t-hover)}
+.ds-switch__track:hover{border-color:var(--border-signal)}
 .ds-switch__knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--text-dim);transition:transform var(--dur-fast) var(--ease-snap),background var(--dur-fast) var(--ease-out)}
 .ds-switch--on .ds-switch__track{border-color:var(--signal-primary);background:var(--surface-active)}
 .ds-switch--on .ds-switch__knob{transform:translateX(20px);background:var(--signal-primary);box-shadow:0 0 10px color-mix(in srgb,var(--signal-primary) 50%,transparent)}
@@ -205,7 +207,7 @@
 /* ── Section header ─────────────────────────────────────── */
 .ds-section{display:flex;align-items:baseline;gap:var(--s-6);padding-bottom:var(--s-5);border-bottom:var(--border-w-hair) solid var(--border-hair)}
 .ds-section__idx{font:var(--type-data);color:var(--signal-primary);letter-spacing:var(--ls-tag)}
-.ds-section__title{font-family:var(--font-display);font-size:var(--fs-h4);color:var(--text-strong);letter-spacing:var(--ls-display);margin:0}
+.ds-section__title{font-family:var(--font-display);font-weight:var(--fw-extralight);font-size:var(--fs-h4);color:var(--text-strong);letter-spacing:var(--ls-display);margin:0}
 .ds-section__note{margin-left:auto;font:var(--type-data);color:var(--text-dim)}
 
 /* ── Media & live readouts ──────────────────────────────── */
