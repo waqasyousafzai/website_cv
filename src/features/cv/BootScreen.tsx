@@ -58,7 +58,7 @@ export function BootScreen() {
 				className="w-full max-w-[620px] border border-hair bg-panel p-s-7 shadow-panel row:p-s-9 console:p-s-11"
 				style={{ clipPath: "var(--notch-14)" }}
 			>
-				<div className="font-display font-extralight text-h3 text-ink-0 leading-[1.05] tracking-display row:text-h2">
+				<div className="font-display font-extralight text-h2 text-ink-0 leading-(--lh-tight) tracking-display row:text-h1">
 					{/* One line per part of the name, so the lockup follows the profile
 					    rather than repeating it. */}
 					{NAME_PARTS.map((part, i) => (
@@ -69,13 +69,27 @@ export function BootScreen() {
 					))}
 					<span className="text-signal-primary">.</span>
 				</div>
-				<div className="mt-s-5 font-data text-dim uppercase tracking-tag">
-					{CV.role} / pipeline cv v2.4
+				{/* The role reads a step brighter than the build tag after it. Each half
+				    stays whole, so a narrow card breaks at the slash, not mid-phrase. */}
+				<div className="mt-s-6 font-data text-dim uppercase tracking-label">
+					<span className="whitespace-nowrap text-muted">{CV.role}</span>{" "}
+					<span className="whitespace-nowrap">/ pipeline cv v2.4</span>
 				</div>
-				<div className="mt-s-9">
-					<LogStream height={104} lines={lines} />
+				<div className="mt-s-9 row:mt-s-10">
+					<LogStream
+						// Sized for the completed boot sequence from first paint, so no line
+						// is clipped and the reveal never moves the layout. The `height`
+						// prop's inline px would beat these classes, so it is cleared.
+						// Measured box heights: 214px holds the wrapped sequence from a
+						// 356px viewport (365px when the frame scrolls); 124px holds it
+						// unwrapped from 545px. Narrower, the log scrolls to its tail.
+						className="h-[214px] row:h-[124px]"
+						lines={lines}
+						style={{ height: undefined }}
+					/>
 				</div>
-				<div className="mt-s-8 flex items-center gap-s-5">
+				{/* The handoff: one hairline, the only gold action, and its key. */}
+				<div className="mt-s-8 flex flex-wrap items-center gap-x-s-6 gap-y-s-4 border-hair border-t pt-s-7 row:mt-s-9 row:pt-s-8">
 					<Button
 						leading={<Icon name="power" size={14} />}
 						notched
@@ -84,7 +98,12 @@ export function BootScreen() {
 					>
 						Initialise
 					</Button>
-					<span className="font-data text-dim">or press ENTER</span>
+					<span className="font-data text-dim">
+						or press{" "}
+						<kbd className="inline-block rounded-1 border border-hair bg-raised px-s-3 py-s-1 font-data text-muted">
+							ENTER
+						</kbd>
+					</span>
 				</div>
 			</div>
 		</div>
