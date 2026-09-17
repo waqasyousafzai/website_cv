@@ -38,7 +38,7 @@ Translate the reference into project-wide tokens for color, typography, spacing,
 
 Restyle the shared navigation, page frames, backgrounds, headings, controls, and global states so every route belongs to the new visual language.
 
-[ ] 5. Route-by-Route Restyling — Subprocess
+[x] 5. Route-by-Route Restyling — Subprocess
 
 Apply the system to each screen while preserving its purpose: the overview experience, pipeline visualization, and replay interface. Refine hierarchy, information density, alignment, and composition for each route.
 

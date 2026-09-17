@@ -45,7 +45,9 @@ function Profile() {
 		<div className={WRAP}>
 			<SectionHeader index="01" note="1 row" title="Profile" />
 			<div>
-				<div className="font-display text-h4 text-ink-0">{CV.name}</div>
+				<div className="font-display font-extralight text-h4 text-ink-0">
+					{CV.name}
+				</div>
 				<div className="mt-s-3 font-body-mono text-signal-primary">
 					{CV.role} · {CV.loc}
 				</div>

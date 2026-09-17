@@ -23,6 +23,11 @@ import {
 	useLiveSeries,
 } from "./live";
 
+/** The longest line of the replay header's note, in characters of its monospace face. */
+const NOTE_CH = Math.max(
+	...RUNS.flatMap((r) => [`run ${r.id} · ${r.when}`.length, r.note.length]),
+);
+
 function RunRow({
 	run,
 	active,
@@ -86,16 +91,36 @@ export function ReplayScreen() {
 				className="min-h-0 flex-1 overflow-auto bg-void-0"
 				style={{ backgroundImage: "var(--grid-coarse)" }}
 			>
-				<div className="grid grid-cols-1 items-start gap-s-7 p-s-6 row:p-s-7 split:grid-cols-[minmax(0,1fr)_320px] split:gap-s-8 console:p-s-8">
-					<div className="flex min-w-0 flex-col gap-s-8">
+				<div className="grid grid-cols-1 items-start gap-(--stack-loose) p-s-6 row:p-s-7 split:grid-cols-[minmax(0,1fr)_var(--inspector-w)] split:gap-s-8 console:p-s-8">
+					{/* Both columns keep one 16px block rhythm (the history column's), which
+					    also lets the replay end with its padding in view at 900px tall. */}
+					<div className="flex min-w-0 flex-col gap-s-6">
 						<SectionHeader
+							// A narrow column puts the note on its own line under the title
+							// instead of wrapping both.
+							className="flex-wrap"
 							index="REC"
-							note={`run ${run.id} · ${run.when}`}
+							note={
+								// The run's identity over its outcome. Every line of every run
+								// fits the block's fixed width, so which run is selected never
+								// changes where the header wraps or how tall it is.
+								<span
+									className="flex flex-col items-end"
+									style={{ minWidth: `${NOTE_CH}ch` }}
+								>
+									<span>
+										run {run.id} · {run.when}
+									</span>
+									<span>{run.note}</span>
+								</span>
+							}
 							title="Run replay"
 						/>
 						<VideoPanel
 							autoPlay
-							caption={`${run.note} · ${run.stages} stages · ${run.elapsed} · generated placeholder capture`}
+							// Only fixed-width figures, so the caption wraps the same way for
+							// every run; the variable outcome note sits in the header.
+							caption={`${run.stages} stages · ${run.elapsed} · generated placeholder capture`}
 							duration={run.elapsed.slice(0, 5)}
 							emptyHint="drop a screen recording of the run in public/media/ and pass it as src"
 							emptyLabel="no capture attached"
@@ -104,7 +129,8 @@ export function ReplayScreen() {
 							notched
 							src="/media/run-4193.webm"
 						/>
-						<div className="flex flex-col gap-s-6">
+						{/* The tabs sit close over the card they switch. */}
+						<div className="flex flex-col gap-s-4">
 							<Tabs
 								aria-label="Replay metrics"
 								items={[
@@ -137,12 +163,20 @@ export function ReplayScreen() {
 								</div>
 							</Card>
 						</div>
-						{/* The CV's own figures, sized to the space left beside history.
-						    They used to be four hand-written cards that the CV does not
-						    support. */}
-						<CvStats />
+						{/* The CV's own figures. They used to be four hand-written cards
+						    that the CV does not support. The CV holds one statistic, so
+						    it is kept to the secondary column's width rather than
+						    stretched across the main one. */}
+						<div className="max-w-inspector">
+							<CvStats />
+						</div>
 					</div>
-					<div className="flex min-w-0 flex-col gap-s-6">
+					<div
+						// A hairline and a loose stack step set history apart from the
+						// replay: above it when stacked, beside it when split, where the
+						// column stretches so the rule runs the replay's full height.
+						className="flex min-w-0 flex-col gap-s-6 border-hair border-t pt-(--stack-loose) split:self-stretch split:border-t-0 split:border-l split:pt-s-0 split:pl-s-8"
+					>
 						<SectionHeader
 							index="LOG"
 							note={`${RUNS.length} runs`}
@@ -158,17 +192,28 @@ export function ReplayScreen() {
 								/>
 							))}
 						</div>
-						<LogStream height={148} lines={logs} />
+						<LogStream
+							// Measured for the longest transcript (run 4193), whose lines
+							// wrap in a narrow column: 250px holds it from a 351px viewport,
+							// 124px in the full-width column from 540px, and 178px in the
+							// split column's 315px content width. The `height` prop's inline
+							// px would beat these classes, so it is cleared.
+							className="h-[250px] row:h-[124px] split:h-[178px]"
+							lines={logs}
+							style={{ height: undefined }}
+						/>
 						{/* A real link, so the request survives a middle-click, a copied
 						    URL and the back button — the pipeline route validates and then
 						    consumes `run` itself. `asChild` drops `leading`, so the icon
-						    moves inside. */}
-						<Button asChild block size="sm" variant="secondary">
-							<Link search={{ run: true }} to="/pipeline">
-								<Icon name="rotate-ccw" size={12} />
-								Re-run this dag
-							</Link>
-						</Button>
+						    moves inside. A hairline sets the action apart from the log. */}
+						<div className="border-hair border-t pt-s-6">
+							<Button asChild block size="sm" variant="secondary">
+								<Link search={{ run: true }} to="/pipeline">
+									<Icon name="rotate-ccw" size={12} />
+									Re-run this dag
+								</Link>
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
