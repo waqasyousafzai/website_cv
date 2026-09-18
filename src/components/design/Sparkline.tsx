@@ -20,6 +20,20 @@ export interface SparklineProps extends HTMLAttributes<HTMLDivElement> {
 	draw?: boolean;
 	/** Hairline at the foot of the plot. Default true. */
 	baseline?: boolean;
+	/**
+	 * Horizontal gridlines between the baseline and the top of the plot, so a
+	 * trend reads as a measurement rather than a shape. Default 0.
+	 */
+	grid?: number;
+	/**
+	 * What the plot is of. Given one, the plot becomes an image with this name
+	 * and a text summary of its range; without one it stays decoration and keeps
+	 * out of the accessibility tree — which is right when a card title or an
+	 * adjacent readout already says what the line means.
+	 */
+	label?: string;
+	/** Appended to the spoken summary, e.g. "rows per minute". */
+	unit?: string;
 	className?: string;
 	style?: CSSProperties;
 }
@@ -32,6 +46,9 @@ export function Sparkline({
 	strokeWidth = 1.25,
 	draw = false,
 	baseline = true,
+	grid = 0,
+	label,
+	unit,
 	className,
 	style,
 	...rest
@@ -49,9 +66,24 @@ export function Sparkline({
 		.join(" ");
 	const area = `${d} L100 100 L0 100 Z`;
 	const [headX, headY] = pts[pts.length - 1];
+	// The series read out in words. A line has no text of its own, so without
+	// this the only thing announced would be the name — true but not informative.
+	const round = (n: number) =>
+		Math.abs(n) >= 100 ? n.toFixed(0) : n.toFixed(1);
+	const tail = unit ? ` ${unit}` : "";
+	const summary = `${label} — latest ${round(v[v.length - 1])}${tail}, low ${round(min)}, high ${round(max)}, ${v.length} samples`;
+	// Gridlines divide the plot's own 4–96 band, which is where the line is
+	// mapped; a line drawn at 0 or 100 would sit outside the data's own range.
+	const rules = Array.from(
+		{ length: grid },
+		(_, i) => 4 + ((i + 1) * 92) / (grid + 1),
+	);
 	return (
+		// biome-ignore lint/a11y/useAriaPropsSupportedByRole: the name and the img role are set by the same `label` — without one there is neither, and the plot stays decoration.
 		<div
+			aria-label={label ? summary : undefined}
 			className={cn("ds-spark", className)}
+			role={label ? "img" : undefined}
 			style={{ height, ...style }}
 			{...rest}
 		>
@@ -61,6 +93,16 @@ export function Sparkline({
 				preserveAspectRatio="none"
 				viewBox="0 0 100 100"
 			>
+				{rules.map((y) => (
+					<line
+						className="ds-spark__grid"
+						key={y}
+						x1={0}
+						x2={100}
+						y1={y}
+						y2={y}
+					/>
+				))}
 				{baseline && (
 					<line
 						className="ds-spark__base"
@@ -81,6 +123,7 @@ export function Sparkline({
 				/>
 			</svg>
 			<span
+				aria-hidden="true"
 				className="ds-spark__head"
 				style={{
 					left: `${headX}%`,

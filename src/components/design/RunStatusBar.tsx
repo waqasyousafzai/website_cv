@@ -22,6 +22,8 @@ export interface RunStatusBarProps extends HTMLAttributes<HTMLDivElement> {
 	elapsed?: ReactNode;
 	/** Extra right-aligned nodes (env badge, controls). */
 	right?: ReactNode;
+	/** Names the progress meter for assistive technology. @default "Run progress" */
+	progressLabel?: string;
 }
 
 export function RunStatusBar({
@@ -31,9 +33,11 @@ export function RunStatusBar({
 	rows,
 	elapsed,
 	right,
+	progressLabel = "Run progress",
 	className,
 	...rest
 }: RunStatusBarProps) {
+	const pct = Math.max(0, Math.min(100, Math.round(progress)));
 	return (
 		<div className={cn("ds-runbar", className)} {...rest}>
 			<span
@@ -44,11 +48,22 @@ export function RunStatusBar({
 				{state}
 			</span>
 			{stage && <span className="ds-runbar__stage text-muted">{stage}</span>}
-			<span className="ds-runbar__meter">
-				<span
-					className="ds-runbar__fill"
-					style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
-				/>
+			{/* The meter is a picture of the figure beside it. Both are here because
+			    neither alone survives: the bar is unreadable to a screen reader and
+			    the percentage is easy to miss at a glance. */}
+			<span
+				aria-label={progressLabel}
+				aria-valuemax={100}
+				aria-valuemin={0}
+				aria-valuenow={pct}
+				aria-valuetext={`${pct}% — ${state}`}
+				className="ds-runbar__meter"
+				role="progressbar"
+			>
+				<span className="ds-runbar__fill" style={{ width: `${pct}%` }} />
+			</span>
+			<span aria-hidden="true" className="ds-runbar__pct">
+				{pct}%
 			</span>
 			{rows && <span>{rows}</span>}
 			{elapsed && <span>{elapsed}</span>}

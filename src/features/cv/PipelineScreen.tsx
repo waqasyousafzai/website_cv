@@ -453,6 +453,7 @@ export function PipelineScreen() {
 				</div>
 				<div className="flex-none border-hair border-t bg-void-0">
 					<LogStream
+						label="Pipeline run log"
 						// Stacked, the log keeps its original 104px box (four rows) under
 						// the taller graph. Split, it grows to six 20px rows, the 18px
 						// cursor line, 12px padding and a 1px border each side (164px),

@@ -28,9 +28,7 @@ export function StatReadout({
 			<span className="ds-stat__label">{label}</span>
 			<span className="ds-stat__value">
 				{value}
-				{unit && (
-					<span className="ml-s-3 font-mono text-meta text-dim">{unit}</span>
-				)}
+				{unit && <span className="ds-stat__unit">{unit}</span>}
 			</span>
 			{delta && (
 				<span className={cn("ds-stat__delta", down && "ds-stat__delta--down")}>

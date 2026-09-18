@@ -13,6 +13,19 @@ const STATUS_LABELS: Record<NodeStatus, string> = {
 	fail: "failed",
 };
 
+/**
+ * The state as a shape, so a stage is never told apart by hue alone. It rides
+ * the stage symbol rather than the label row, which is already full at the
+ * widest label in the DAG. The word itself stays in the `sr-only` prefix.
+ */
+const STATUS_MARKS: Record<NodeStatus, string> = {
+	idle: "\u2013",
+	running: "\u25B8",
+	ok: "\u2713",
+	warn: "!",
+	fail: "\u2715",
+};
+
 /** One stage in the CV pipeline: source, ingest, transform, model, serve. */
 export interface PipelineNodeProps
 	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
@@ -61,6 +74,9 @@ export function PipelineNode({
 			<div className="ds-node__top">
 				<span className="ds-node__icon">
 					<Icon name={icon} size={15} />
+					<span aria-hidden="true" className="ds-node__flag">
+						{STATUS_MARKS[status]}
+					</span>
 				</span>
 				<span className="ds-node__label">{label}</span>
 			</div>
@@ -70,7 +86,7 @@ export function PipelineNode({
 				</div>
 			)}
 			{(rows || duration) && (
-				<div className="ds-node__meta">
+				<div className="ds-node__meta ds-node__meta--figures">
 					<span>{rows || ""}</span>
 					<span>{duration || ""}</span>
 				</div>

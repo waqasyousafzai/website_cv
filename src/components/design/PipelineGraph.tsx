@@ -11,6 +11,13 @@ import type { IconName } from "./Icon";
 import { PipelineNode } from "./PipelineNode";
 import type { NodeStatus } from "./types";
 
+/** Corner radius of an orthogonal connector's elbow, px. */
+const CORNER = 10;
+/** Half-height of the arrowhead where a connector lands on a node, px. */
+const CAP = 3.5;
+/** How far the arrowhead reaches back along the connector, px. */
+const CAP_LEN = 7;
+
 export interface GraphNode {
 	id: string;
 	label: string;
@@ -86,14 +93,46 @@ export function PipelineGraph({
 	...rest
 }: PipelineGraphProps) {
 	const byId = new Map(nodes.map((n) => [n.id, n]));
+	// Orthogonal, not bezier: a schematic says "this feeds that" with a run and a
+	// corner, where an S-curve only gestures at it. The corner radius is capped by
+	// the space the run actually has, so a short hop stays a clean elbow instead
+	// of collapsing into a knot.
 	const path = (a: GraphNode, b: GraphNode) => {
 		const x1 = a.x + nodeWidth;
 		const y1 = a.y + nodeHeight / 2;
 		const x2 = b.x;
 		const y2 = b.y + nodeHeight / 2;
+		if (Math.abs(y2 - y1) < 0.5) return `M${x1} ${y1}H${x2}`;
 		const mx = (x1 + x2) / 2;
-		return `M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`;
+		const dy = y2 > y1 ? 1 : -1;
+		const r = Math.min(
+			CORNER,
+			Math.abs(y2 - y1) / 2,
+			Math.abs(mx - x1),
+			Math.abs(x2 - mx),
+		);
+		return (
+			`M${x1} ${y1}H${mx - r}` +
+			`Q${mx} ${y1} ${mx} ${y1 + dy * r}` +
+			`V${y2 - dy * r}` +
+			`Q${mx} ${y2} ${mx + r} ${y2}` +
+			`H${x2}`
+		);
 	};
+	// One mark per node, not per edge: two connectors arriving at `fct_cv` land on
+	// the same point, and stacking two identical arrowheads there would only
+	// double the ink and the accessibility-tree noise.
+	const live = new Set(
+		edges.filter((e) => e.live).map((e) => `${e.from}>${e.to}`),
+	);
+	const ports = new Map<string, boolean>();
+	const caps = new Map<string, boolean>();
+	for (const e of edges) {
+		if (!byId.has(e.from) || !byId.has(e.to)) continue;
+		const flowing = live.has(`${e.from}>${e.to}`);
+		ports.set(e.from, (ports.get(e.from) ?? false) || flowing);
+		caps.set(e.to, (caps.get(e.to) ?? false) || flowing);
+	}
 	// The canvas is sized to the DAG in both axes, so overflow — and therefore
 	// scrolling — is deliberate rather than a side effect of where the
 	// absolutely positioned nodes happen to land.
@@ -223,6 +262,39 @@ export function PipelineGraph({
 									)}
 									d={path(a, b)}
 									key={`${e.from}->${e.to}`}
+								/>
+							);
+						})}
+						{[...ports].map(([id, flowing]) => {
+							const n = byId.get(id);
+							if (!n) return null;
+							return (
+								<rect
+									className={cn(
+										"ds-graph__port",
+										flowing && "ds-graph__port--live",
+									)}
+									height={5}
+									key={`port-${id}`}
+									width={5}
+									x={n.x + nodeWidth - 2.5}
+									y={n.y + nodeHeight / 2 - 2.5}
+								/>
+							);
+						})}
+						{[...caps].map(([id, flowing]) => {
+							const n = byId.get(id);
+							if (!n) return null;
+							const x = n.x;
+							const y = n.y + nodeHeight / 2;
+							return (
+								<path
+									className={cn(
+										"ds-graph__cap",
+										flowing && "ds-graph__cap--live",
+									)}
+									d={`M${x - CAP_LEN} ${y - CAP}L${x} ${y}L${x - CAP_LEN} ${y + CAP}Z`}
+									key={`cap-${id}`}
 								/>
 							);
 						})}

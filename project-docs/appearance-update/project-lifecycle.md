@@ -42,7 +42,7 @@ Restyle the shared navigation, page frames, backgrounds, headings, controls, and
 
 Apply the system to each screen while preserving its purpose: the overview experience, pipeline visualization, and replay interface. Refine hierarchy, information density, alignment, and composition for each route.
 
-[ ] 6. Data Visualization and Motion — Subprocess
+[x] 6. Data Visualization and Motion — Subprocess
 
 Rework graphs, nodes, timelines, meters, metrics, status indicators, and transitions to resemble the reference's precise technical diagrams and subtle animated feedback.
 
