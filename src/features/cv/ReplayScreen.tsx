@@ -39,6 +39,9 @@ function RunRow({
 }) {
 	return (
 		<button
+			// A pressed toggle, the same way a pipeline node reports its selection:
+			// the row picks which run the transcript and the stats below describe.
+			aria-pressed={active}
 			className={cn(
 				"flex cursor-pointer flex-col gap-s-3 border bg-card px-s-6 py-s-5 text-left transition-hover",
 				active ? "border-signal shadow-glow" : "border-hair",
@@ -48,6 +51,18 @@ function RunRow({
 		>
 			<span className="flex items-center gap-s-5">
 				<span className="font-data text-strong uppercase tracking-label">
+					{/* Selection is a gold border and a glow — both hue. The caret is
+					    the cue that survives without it. A reserved-width box keeps the
+					    row from shifting sideways as the selection moves. */}
+					<span
+						aria-hidden="true"
+						className={cn(
+							"inline-block w-[13px] text-signal-primary",
+							!active && "opacity-0",
+						)}
+					>
+						▸
+					</span>
 					run {run.id}
 				</span>
 				<span className="ml-auto">
@@ -148,12 +163,21 @@ export function ReplayScreen() {
 								}
 							>
 								{tab === "throughput" ? (
-									<Sparkline fill height={96} values={thrpt} />
+									<Sparkline
+										fill
+										grid={3}
+										height={96}
+										label="Rows per minute, live"
+										values={thrpt}
+									/>
 								) : (
 									<Sparkline
 										color="var(--signal-warn)"
 										draw
+										grid={3}
 										height={96}
+										label="Run duration, last 24 runs"
+										unit="seconds"
 										values={dur}
 									/>
 								)}
@@ -193,6 +217,7 @@ export function ReplayScreen() {
 							))}
 						</div>
 						<LogStream
+							label={`Run ${run.id} transcript`}
 							// Measured for the longest transcript (run 4193), whose lines
 							// wrap in a narrow column: 250px holds it from a 351px viewport,
 							// 124px in the full-width column from 540px, and 178px in the

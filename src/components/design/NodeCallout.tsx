@@ -40,30 +40,34 @@ export function NodeCallout({
 			className={cn("ds-callout", `ds-callout--${side}`, className)}
 			{...rest}
 		>
-			<span className="ds-callout__stub" />
-			<div className="ds-callout__head">
-				<span className="ds-callout__title">{title}</span>
-				{status && <Badge status={status}>{status}</Badge>}
-				{onClose && (
-					<button
-						aria-label="Close"
-						className="ds-callout__x"
-						onClick={onClose}
-						type="button"
-					>
-						×
-					</button>
-				)}
-			</div>
-			{(kind || rows || duration) && (
-				<div className="ds-callout__meta">
-					{kind && <span>{kind}</span>}
-					{rows && <span>{rows}</span>}
-					{duration && <span>{duration}</span>}
+			<span aria-hidden="true" className="ds-callout__stub" />
+			{/* The notch lives on this box, not on the frame above it: a clip-path
+			    clips to the border box, and the stub has to reach outside it. */}
+			<div className="ds-callout__box">
+				<div className="ds-callout__head">
+					<span className="ds-callout__title">{title}</span>
+					{status && <Badge status={status}>{status}</Badge>}
+					{onClose && (
+						<button
+							aria-label="Close"
+							className="ds-callout__x"
+							onClick={onClose}
+							type="button"
+						>
+							×
+						</button>
+					)}
 				</div>
-			)}
-			<div className="ds-callout__body">{children}</div>
-			{actions && <div className="ds-callout__foot">{actions}</div>}
+				{(kind || rows || duration) && (
+					<div className="ds-callout__meta">
+						{kind && <span>{kind}</span>}
+						{rows && <span>{rows}</span>}
+						{duration && <span>{duration}</span>}
+					</div>
+				)}
+				<div className="ds-callout__body">{children}</div>
+				{actions && <div className="ds-callout__foot">{actions}</div>}
+			</div>
 		</div>
 	);
 }

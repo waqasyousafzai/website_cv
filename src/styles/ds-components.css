@@ -78,7 +78,14 @@
 
 /* ── Badge / Tag ────────────────────────────────────────── */
 .ds-badge{display:inline-flex;align-items:center;gap:var(--s-2);min-height:20px;padding:0 var(--s-4);border:var(--border-w-hair) solid;border-radius:var(--r-1);font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase}
-.ds-badge__dot{width:5px;height:5px;border-radius:var(--r-pill);background:currentColor}
+/* The badge names its status in words; the dot repeats it as a shape so the
+   two never rest on hue alone. 6px is the smallest size at which the five
+   silhouettes stay apart on a hairline border. */
+.ds-badge__dot{width:6px;height:6px;flex:none;border-radius:var(--r-pill);background:currentColor}
+.ds-badge--idle .ds-badge__dot{border-radius:0}
+.ds-badge--ok .ds-badge__dot{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.ds-badge--warn .ds-badge__dot{border-radius:0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.ds-badge--fail .ds-badge__dot{border-radius:0;clip-path:polygon(0 0,100% 100%,50% 50%,100% 0,0 100%)}
 .ds-badge--idle{color:var(--signal-idle);border-color:var(--border-line);background:var(--surface-raised)}
 .ds-badge--running{color:var(--signal-running);border-color:var(--cyan-700);background:rgba(53,214,255,.08)}
 .ds-badge--ok{color:var(--signal-primary);border-color:var(--signal-primary-dim);background:var(--surface-active)}
@@ -122,10 +129,22 @@
 
 /* ── Pipeline ───────────────────────────────────────────── */
 .ds-node{position:relative;display:flex;flex-direction:column;gap:var(--s-3);min-width:168px;padding:var(--s-5);background:var(--surface-card);border:var(--border-w-hair) solid var(--node-idle-line);border-radius:0;clip-path:var(--notch-8);cursor:pointer;transition:var(--t-hover)}
-.ds-node__top{display:flex;align-items:center;gap:var(--s-4)}
-.ds-node__icon{display:flex;color:var(--node-idle-fg)}
-.ds-node__label{font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-strong)}
-.ds-node__meta{font:var(--type-data);color:var(--text-dim);display:flex;gap:var(--s-4);justify-content:space-between}
+/* 6px, not 8px: the widest stage name in the DAG (`src_experience`, 127.7px
+   measured) needs 129px of the 150px row once the symbol and this gap are paid
+   for. At 8px it was already 0.7px over and silently clipped; the label now
+   ellipsizes rather than losing a character without saying so. */
+.ds-node__top{display:flex;align-items:center;gap:var(--s-3)}
+.ds-node__icon{position:relative;display:flex;color:var(--node-idle-fg)}
+/* The state marker rides the stage symbol rather than the label row: the row is
+   already full at the widest label (127.7px of a 150px box, measured), and a
+   badge on the symbol is the vocabulary a DAG viewer already uses. */
+.ds-node__flag{position:absolute;right:-4px;bottom:-4px;display:flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:var(--r-pill);background:var(--surface-card);border:var(--border-w-hair) solid currentColor;font-family:var(--font-mono);font-size:9px;font-weight:var(--fw-bold);line-height:1;letter-spacing:0}
+.ds-node__label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-strong)}
+.ds-node__meta{min-width:0;font:var(--type-data);color:var(--text-dim);display:flex;gap:var(--s-4);justify-content:space-between}
+.ds-node__meta>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The figures the stage produced, read as a readout: tabular so a running count
+   does not jitter the column, and a step brighter than the stage type above. */
+.ds-node__meta--figures{color:var(--text-body);font-variant-numeric:tabular-nums}
 .ds-node--running{border-color:var(--node-running-line);box-shadow:var(--glow-running)}
 .ds-node--running .ds-node__icon{color:var(--node-running-fg);animation:ds-pulse var(--dur-pulse) var(--ease-in-out) infinite}
 .ds-node--ok{border-color:var(--node-ok-line)}
@@ -142,17 +161,33 @@
 .ds-graph__overlay{position:absolute;inset:0;pointer-events:none;z-index:5}
 .ds-graph__overlay>*{pointer-events:auto}
 .ds-graph__edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.ds-graph__edge{fill:none;stroke:var(--border-line);stroke-width:1.5}
+.ds-graph__edge{fill:none;stroke:var(--border-line);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .ds-graph__edge--live{stroke:var(--signal-primary);stroke-dasharray:4 8;animation:ds-flow var(--dur-flow) var(--ease-linear) infinite;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--signal-primary) 60%,transparent))}
+/* Where a connector leaves and lands. Without them an orthogonal run stops in
+   mid-air at the node edge; with them the DAG reads as ports and arrivals. */
+.ds-graph__port{fill:var(--surface-panel);stroke:var(--border-line);stroke-width:1}
+.ds-graph__cap{fill:var(--border-line)}
+.ds-graph__port--live{stroke:var(--signal-primary)}
+.ds-graph__cap--live{fill:var(--signal-primary);animation:ds-pulse var(--dur-pulse) var(--ease-in-out) infinite}
 .ds-runbar{display:flex;align-items:center;flex-wrap:nowrap;gap:var(--s-5);height:var(--statusbar-h);padding:0 var(--s-6);background:var(--void-1);border-top:var(--border-w-hair) solid var(--border-hair);font:var(--type-data);color:var(--text-dim);white-space:nowrap;overflow:hidden}
 .ds-runbar>*{flex:none;min-width:0}
 .ds-runbar__stage{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ds-runbar .ds-badge{flex:none}
-.ds-runbar__meter{flex:1 1 40px;min-width:40px;height:4px;background:var(--surface-input);overflow:hidden}
+/* Segmented rather than smooth: the run advances in seven discrete stages, and
+   a ticked track says so at a glance. The ticks are painted over the fill, so
+   the fill itself stays one animatable width. */
+.ds-runbar__meter{position:relative;flex:1 1 40px;min-width:40px;height:6px;background:var(--surface-input);border:var(--border-w-hair) solid var(--border-hair);overflow:hidden}
+.ds-runbar__meter::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 5px,var(--void-1) 5px 6px)}
+.ds-runbar__pct{flex:none;font-variant-numeric:tabular-nums;color:var(--text-muted)}
 .ds-runbar__fill{display:block;height:100%;background:var(--signal-primary);box-shadow:0 0 10px color-mix(in srgb,var(--signal-primary) 60%,transparent);transition:width var(--dur-base) var(--ease-out)}
 
-.ds-callout{position:absolute;width:300px;display:flex;flex-direction:column;background:var(--surface-raised);border:var(--border-w-hair) solid var(--border-signal);box-shadow:var(--shadow-pop),var(--glow-primary);clip-path:var(--notch-14);animation:ds-callout-in var(--dur-base) var(--ease-out);z-index:4}
-.ds-callout__stub{position:absolute;background:var(--signal-primary);box-shadow:0 0 8px color-mix(in srgb,var(--signal-primary) 60%,transparent)}
+/* The notch is a clip-path, which clips to the border box — so the connector
+   stub cannot be a child of the clipped box. `.ds-callout` is the unclipped
+   positioning frame and `.ds-callout__box` carries the notch, which leaves the
+   stub free to reach back to the node it describes. */
+.ds-callout{position:absolute;width:300px;display:flex;flex-direction:column;filter:drop-shadow(0 18px 24px rgba(8,11,17,.55));animation:ds-callout-in var(--dur-base) var(--ease-out);z-index:4}
+.ds-callout__box{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;background:var(--surface-raised);border:var(--border-w-hair) solid var(--border-signal);box-shadow:var(--glow-primary);clip-path:var(--notch-14)}
+.ds-callout__stub{position:absolute;background:var(--signal-primary);box-shadow:0 0 8px color-mix(in srgb,var(--signal-primary) 60%,transparent);z-index:1}
 .ds-callout--right .ds-callout__stub{left:-16px;top:28px;width:16px;height:1px}
 .ds-callout--left .ds-callout__stub{right:-16px;top:28px;width:16px;height:1px}
 .ds-callout--top .ds-callout__stub{bottom:-16px;left:28px;width:1px;height:16px}
@@ -164,13 +199,29 @@
 .ds-callout__meta{flex:none;display:flex;gap:var(--s-6);padding:var(--s-4) var(--s-6);border-bottom:var(--border-w-hair) solid var(--border-hair);font:var(--type-data);color:var(--text-dim);white-space:nowrap;overflow:hidden}
 .ds-callout__body{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:var(--s-6);font:var(--type-body);color:var(--text-muted)}
 .ds-callout__foot{flex:none;display:flex;gap:var(--s-4);padding:var(--s-5) var(--s-6);border-top:var(--border-w-hair) solid var(--border-hair)}
+/* The box arrives from the side its stub is on, so the entry traces the
+   connector instead of crossing it. */
 @keyframes ds-callout-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes ds-callout-in-left{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+@keyframes ds-callout-in-top{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes ds-callout-in-bottom{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.ds-callout--left{animation-name:ds-callout-in-left}
+.ds-callout--top{animation-name:ds-callout-in-top}
+.ds-callout--bottom{animation-name:ds-callout-in-bottom}
 
 /* ── Data displays ──────────────────────────────────────── */
 .ds-log{background:var(--void-well);border:var(--border-w-hair) solid var(--border-hair);padding:var(--s-5);font:var(--type-body-mono);font-size:var(--fs-meta);overflow:auto}
-.ds-log__row{display:flex;gap:var(--s-5);padding:1px 0;white-space:pre}
-.ds-log__ts{color:var(--text-dim);flex:none}
-.ds-log__lvl{flex:none;width:52px;text-transform:uppercase;letter-spacing:var(--ls-label);font-size:var(--fs-micro);padding-top:2px}
+.ds-log:focus-visible{outline:var(--border-w-emphasis) solid var(--focus-ring);outline-offset:-2px}
+/* 6px columns, not 12px: the gutter rule below is what separates the timestamp
+   from the level now, so the wide gap was doing the same job twice — and the
+   message column is the one that has to hold a wrapped line at 360px. Net, a
+   row gives the message 14px more than it had before the rule existed. */
+.ds-log__row{display:flex;gap:var(--s-3);padding:1px 0;white-space:pre}
+.ds-log__ts{color:var(--text-dim);flex:none;font-variant-numeric:tabular-nums;padding-right:var(--s-3);border-right:var(--border-w-hair) solid var(--border-hair)}
+.ds-log__lvl{flex:none;display:flex;align-items:baseline;gap:var(--s-2);width:52px;text-transform:uppercase;letter-spacing:var(--ls-label);font-size:var(--fs-micro);padding-top:2px}
+/* Inside the existing 52px cell, so it costs no column: the level word is still
+   the cue that carries meaning, and the mark only makes the stream scannable. */
+.ds-log__mark{flex:none;font-weight:var(--fw-bold);letter-spacing:0}
 .ds-log__lvl--info{color:var(--signal-running)}
 .ds-log__lvl--ok{color:var(--signal-primary)}
 .ds-log__lvl--warn{color:var(--signal-warn)}
@@ -179,19 +230,29 @@
 .ds-log__cursor{display:inline-block;width:7px;height:13px;background:var(--signal-primary);animation:ds-blink var(--dur-blink) steps(1) infinite;vertical-align:-2px}
 .ds-stat{display:flex;flex-direction:column;gap:var(--s-2);padding:var(--s-5) var(--s-6);background:var(--surface-card);border:var(--border-w-hair) solid var(--border-hair);border-left:var(--border-w-emphasis) solid var(--signal-primary)}
 .ds-stat__label{font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-dim)}
-.ds-stat__value{font-family:var(--font-display);font-size:var(--fs-h4);color:var(--text-strong);letter-spacing:var(--ls-display)}
+.ds-stat__value{display:flex;align-items:baseline;gap:var(--s-3);font-family:var(--font-display);font-size:var(--fs-h4);color:var(--text-strong);letter-spacing:var(--ls-display);font-variant-numeric:tabular-nums}
+.ds-stat__unit{font:var(--type-data);color:var(--text-dim);letter-spacing:var(--ls-label);text-transform:uppercase}
+/* The arrow is the cue; the hue only reinforces it. */
 .ds-stat__delta{font:var(--type-data);color:var(--signal-primary)}
+.ds-stat__delta::before{content:"\25B2\00a0"}
 .ds-stat__delta--down{color:var(--signal-fail)}
+.ds-stat__delta--down::before{content:"\25BC\00a0"}
 .ds-meter{display:flex;flex-direction:column;gap:var(--s-3)}
 .ds-meter__top{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-5);min-width:0;font:var(--type-data);letter-spacing:var(--ls-mono);color:var(--text-body)}
 .ds-meter__top>:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ds-meter__level{flex:none;white-space:nowrap;color:var(--text-dim);text-transform:uppercase;letter-spacing:var(--ls-label)}
+/* The ticks are a picture of the score; this is the score. */
+.ds-meter__score{flex:none;white-space:nowrap;color:var(--signal-primary);font-variant-numeric:tabular-nums}
 .ds-meter__ticks{display:flex;gap:3px}
 .ds-meter__tick{flex:1;height:6px;background:var(--surface-input);border:var(--border-w-hair) solid var(--border-hair)}
+.ds-meter__ticks{align-items:stretch}
 .ds-meter__tick--on{background:var(--signal-primary);border-color:var(--signal-primary);box-shadow:0 0 8px color-mix(in srgb,var(--signal-primary) 35%,transparent)}
 .ds-timeline{display:flex;gap:var(--s-6)}
 .ds-timeline__rail{flex:none;width:10px;display:flex;flex-direction:column;align-items:center;padding-top:5px}
-.ds-timeline__node{width:8px;height:8px;background:var(--signal-primary);box-shadow:0 0 10px color-mix(in srgb,var(--signal-primary) 50%,transparent)}
+/* A hollow square around a centre dot: the same mark the graph uses for a
+   port, so a record on the timeline and a stage on the DAG read as one system. */
+.ds-timeline__node{position:relative;width:9px;height:9px;flex:none;background:var(--surface-panel);border:var(--border-w-hair) solid var(--signal-primary);box-shadow:0 0 10px color-mix(in srgb,var(--signal-primary) 40%,transparent)}
+.ds-timeline__node::after{content:"";position:absolute;inset:2px;background:var(--signal-primary)}
 .ds-timeline__line{flex:1;width:1px;background:var(--border-line);margin-top:var(--s-2)}
 .ds-timeline__when{font:var(--type-data);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-dim)}
 .ds-timeline__role{font:var(--type-h4);font-size:var(--fs-lead);color:var(--text-strong);margin:var(--s-2) 0 var(--s-1)}
@@ -218,13 +279,18 @@
 .ds-spark__line--draw{stroke-dasharray:1;stroke-dashoffset:1;animation:ds-draw 900ms var(--ease-linear) forwards}
 .ds-spark__fill{opacity:.12}
 .ds-spark__base{stroke:var(--border-hair);stroke-width:1;vector-effect:non-scaling-stroke}
+/* Gridlines make a trend readable as a measurement rather than a shape. They
+   carry no value of their own, so they stay out of the accessibility tree with
+   the rest of the plot. */
+.ds-spark__grid{stroke:var(--border-hair);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke;opacity:.7}
 .ds-spark__head{position:absolute;width:3px;height:3px;margin:-1.5px 0 0 -1.5px;color:inherit;animation:ds-head 1.6s var(--ease-in-out) infinite}
 .ds-ticker{overflow:hidden;border-top:var(--border-w-hair) solid var(--border-hair);border-bottom:var(--border-w-hair) solid var(--border-hair);background:var(--void-well);padding:var(--s-4) 0}
+.ds-ticker:focus-visible{outline:var(--border-w-emphasis) solid var(--focus-ring);outline-offset:-2px}
 .ds-ticker__track{display:flex;width:max-content;gap:var(--s-9);animation:ds-marquee 34s var(--ease-linear) infinite}
 .ds-ticker:hover .ds-ticker__track{animation-play-state:paused}
 .ds-ticker__item{display:flex;align-items:baseline;gap:var(--s-4);flex:none}
 .ds-ticker__label{font:var(--type-data);font-size:var(--fs-micro);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-dim)}
-.ds-ticker__value{font:var(--type-body-mono);font-size:var(--fs-meta);color:var(--ink-1)}
+.ds-ticker__value{font:var(--type-body-mono);font-size:var(--fs-meta);color:var(--ink-1);font-variant-numeric:tabular-nums}
 .ds-ticker__value--ok{color:var(--signal-primary)}
 .ds-ticker__value--running{color:var(--signal-running)}
 .ds-ticker__value--warn{color:var(--signal-warn)}

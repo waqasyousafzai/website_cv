@@ -1,6 +1,6 @@
 :root{
   --dur-instant:80ms; --dur-fast:140ms; --dur-base:220ms; --dur-slow:420ms; --dur-flow:1400ms;
-  --dur-pulse:1.2s; --dur-blink:1s;
+  --dur-pulse:1.2s; --dur-blink:1s; --dur-sweep:1.35s; --dur-head:1.6s; --dur-draw:900ms;
   --ease-out:cubic-bezier(.2,.8,.2,1);
   --ease-in-out:cubic-bezier(.6,0,.35,1);
   --ease-snap:cubic-bezier(.16,1.02,.3,1);
@@ -25,6 +25,16 @@
      sit later in source order — without !important they win the cascade and this
      block has no effect. Confirmed by runtime cascade inspection (see Task 5's
      Verification section); do not remove without re-verifying in a browser. */
-  .ds-node--running::after,.ds-ticker__track,.ds-spark__head,.ds-spark__line--draw,.ds-video__scan,.ds-node--running .ds-node__icon,.ds-video__dot--live,.ds-badge--running .ds-badge__dot,.ds-graph__edge--live,.ds-log__cursor{animation:none!important}
+  .ds-node--running::after,.ds-ticker__track,.ds-spark__head,.ds-spark__line--draw,.ds-video__scan,.ds-node--running .ds-node__icon,.ds-video__dot--live,.ds-badge--running .ds-badge__dot,.ds-graph__edge--live,.ds-graph__cap--live,.ds-log__cursor{animation:none!important}
   .ds-spark__line--draw{stroke-dashoffset:0!important}
+  /* The marquee is the only thing that brings the tail of the strip into view,
+     so with it stopped the strip becomes a scroll region instead, showing one
+     set rather than the two the loop needs. `MetricTicker` drops the duplicate
+     copy and takes the matching tab stop from the same preference. */
+  .ds-ticker{overflow-x:auto}
+  .ds-ticker__item--dup{display:none}
+  /* The callout still enters — it is the answer to a click, and appearing with
+     no transition is the meaningful end state — but it arrives in place rather
+     than sliding in from its stub. */
+  .ds-callout{animation:none!important}
 }

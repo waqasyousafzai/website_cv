@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon, type LogLine, LogStream } from "@/components/design";
 import { Button } from "@/components/ui/button";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { count } from "@/lib/utils";
 import { CV, EDGES, NAME_PARTS, NODES } from "./data";
 
@@ -17,26 +18,39 @@ const BOOT: ReadonlyArray<[LogLine["level"], string]> = [
 
 const LINE_EVERY = 260;
 
+/** The sequence up to `n` lines, timestamped as the run that produced it. */
+const upTo = (n: number): LogLine[] =>
+	BOOT.slice(0, n).map((l, k) => ({
+		ts: `00:00.${String(120 * k + 4).padStart(3, "0")}`,
+		level: l[0],
+		msg: l[1],
+	}));
+
 /** Cold-boot panel. Initialise (or Enter) hands over to the pipeline route. */
 export function BootScreen() {
 	const navigate = useNavigate();
+	const still = useReducedMotion();
 	const [lines, setLines] = useState<LogLine[]>([]);
 
+	// The paced reveal is presentation, not content: the four lines are known at
+	// first paint and the timer only withholds them. Under reduced motion it is
+	// skipped outright and the completed sequence is there from the start —
+	// which is the meaningful end state, and leaves the "press enter" line
+	// available immediately rather than a second later. The panel is already
+	// sized for the finished sequence, so neither path moves the layout.
 	useEffect(() => {
+		if (still) {
+			setLines(upTo(BOOT.length));
+			return;
+		}
 		let i = 0;
 		const t = setInterval(() => {
 			i++;
-			setLines(
-				BOOT.slice(0, i).map((l, k) => ({
-					ts: `00:00.${String(120 * k + 4).padStart(3, "0")}`,
-					level: l[0],
-					msg: l[1],
-				})),
-			);
+			setLines(upTo(i));
 			if (i >= BOOT.length) clearInterval(t);
 		}, LINE_EVERY);
 		return () => clearInterval(t);
-	}, []);
+	}, [still]);
 
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
@@ -77,6 +91,7 @@ export function BootScreen() {
 				</div>
 				<div className="mt-s-9 row:mt-s-10">
 					<LogStream
+						label="Boot log"
 						// Sized for the completed boot sequence from first paint, so no line
 						// is clipped and the reveal never moves the layout. The `height`
 						// prop's inline px would beat these classes, so it is cleared.

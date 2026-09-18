@@ -31,7 +31,13 @@ function Overview() {
 			<p className="m-0 font-body text-muted">{CV.summary}</p>
 			<CvStats />
 			<Card title="rows / minute · live">
-				<Sparkline fill height={56} values={series} />
+				<Sparkline
+					fill
+					grid={2}
+					height={56}
+					label="Rows per minute, live"
+					values={series}
+				/>
 			</Card>
 			<Card padded={false} title="fct_cv / schema">
 				<SchemaTable columns={CV.schema} />
